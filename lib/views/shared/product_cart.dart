@@ -68,7 +68,7 @@ class _ProductCartState extends State<ProductCart> {
                     Text(
                       widget.name,
                       style: appstyleWithHt(
-                          36, Colors.black, FontWeight.bold, 1.1),
+                          30, Colors.black, FontWeight.bold, 1.1),
                     ),
                     Text(
                       widget.category,
@@ -87,24 +87,24 @@ class _ProductCartState extends State<ProductCart> {
                       widget.price,
                       style: appstyle(30, Colors.black, FontWeight.w600),
                     ),
-                    Row(
-                      children: [
-                        Text(
-                          "Colors",
-                          style: appstyle(18, Colors.grey, FontWeight.w500),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        ChoiceChip(
-                          label: Text(" "),
-                          // Replace with your desired label text
-                          selected: selected,
-                          visualDensity: VisualDensity.compact,
-                          selectedColor: Colors.black,
-                        )
-                      ],
-                    )
+                    // Row(
+                    //   children: [
+                    //     Text(
+                    //       "Colors",
+                    //       style: appstyle(18, Colors.grey, FontWeight.w500),
+                    //     ),
+                    //     const SizedBox(
+                    //       width: 5,
+                    //     ),
+                    //     ChoiceChip(
+                    //       label: Text(" "),
+                    //       // Replace with your desired label text
+                    //       selected: selected,
+                    //       visualDensity: VisualDensity.compact,
+                    //       selectedColor: Colors.black,
+                    //     )
+                    //   ],
+                    // )
                   ],
                 ),
               )
