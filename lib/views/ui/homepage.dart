@@ -13,8 +13,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  late final TabController _tabController =
-      TabController(length: 3, vsync: this);
+  late final TabController _tabController;
+
   late Future<List<Product>> _male;
   late Future<List<Product>> _female;
   late Future<List<Product>> _kids;
@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     getMale();
     getFemale();
     getKids();
@@ -101,12 +102,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: TabBarView(controller: _tabController, children: [
                     HomeWidget(
                       male: _male,
+                      tabIndex: 0,
                     ),
                     HomeWidget(
                       male: _female,
+                      tabIndex: 1,
                     ),
                     HomeWidget(
                       male: _kids,
+                      tabIndex: 2,
                     ),
                   ]),
                 ),

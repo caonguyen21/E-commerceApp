@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_shopping_app/views/shared/category_btn.dart';
+import 'package:flutter_shopping_app/views/shared/custom_spacer.dart';
 import 'package:flutter_shopping_app/views/shared/lates_product.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -7,16 +9,17 @@ import '../../services/helper.dart';
 import '../shared/appstyle.dart';
 
 class ProductByCat extends StatefulWidget {
-  const ProductByCat({super.key});
+  const ProductByCat({super.key, required this.tabIndex});
+
+  final int tabIndex;
 
   @override
   State<ProductByCat> createState() => _ProductByCatState();
 }
 
 class _ProductByCatState extends State<ProductByCat>
-    with TickerProviderStateMixin {
-  late final TabController _tabController =
-      TabController(length: 3, vsync: this);
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
 
   late Future<List<Product>> _male;
   late Future<List<Product>> _female;
@@ -37,10 +40,25 @@ class _ProductByCatState extends State<ProductByCat>
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     getMale();
     getFemale();
     getKids();
+    _tabController.index = widget.tabIndex;
   }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  List<String> brand = [
+    "assets/images/adidas.png",
+    "assets/images/gucci.png",
+    "assets/images/jordan.png",
+    "assets/images/nike.png"
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +94,7 @@ class _ProductByCatState extends State<ProductByCat>
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              filter();
                             },
                             child: const Icon(
                               FontAwesomeIcons.sliders,
@@ -129,5 +147,132 @@ class _ProductByCatState extends State<ProductByCat>
             ],
           ),
         ));
+  }
+
+  Future<dynamic> filter() {
+    double value = 100;
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: Colors.white54,
+        builder: (context) => Container(
+              height: MediaQuery.of(context).size.height * 0.84,
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25))),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    height: 5,
+                    width: 40,
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        color: Colors.black38),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.8,
+                    child: Column(
+                      children: [
+                        const CustomSpacer(),
+                        Text(
+                          "Filter",
+                          style: appstyle(40, Colors.black, FontWeight.bold),
+                        ),
+                        const CustomSpacer(),
+                        Text(
+                          "Gender",
+                          style: appstyle(20, Colors.black, FontWeight.bold),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          children: const [
+                            CategoryBtn(
+                                buttonColor: Colors.black, label: "Men"),
+                            CategoryBtn(
+                                buttonColor: Colors.grey, label: "Women"),
+                            CategoryBtn(
+                                buttonColor: Colors.grey, label: "Kids"),
+                          ],
+                        ),
+                        const CustomSpacer(),
+                        Text(
+                          "Category",
+                          style: appstyle(20, Colors.black, FontWeight.w600),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          children: const [
+                            CategoryBtn(
+                                buttonColor: Colors.black, label: "Shoes"),
+                            CategoryBtn(
+                                buttonColor: Colors.grey, label: "Apparrels"),
+                            CategoryBtn(
+                                buttonColor: Colors.grey, label: "Accessori"),
+                          ],
+                        ),
+                        const CustomSpacer(),
+                        Text(
+                          "Price",
+                          style: appstyle(20, Colors.black, FontWeight.bold),
+                        ),
+                        const CustomSpacer(),
+                        Slider(
+                            value: value,
+                            activeColor: Colors.black,
+                            inactiveColor: Colors.grey,
+                            thumbColor: Colors.black,
+                            max: 500,
+                            divisions: 50,
+                            label: value.toString(),
+                            secondaryTrackValue: 200,
+                            onChanged: (d) {}),
+                        const CustomSpacer(),
+                        Text(
+                          "Brand",
+                          style: appstyle(20, Colors.black, FontWeight.w600),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          height: 80,
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: brand.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(12))),
+                                    child: Image.asset(
+                                      brand[index],
+                                      color: Colors.black,
+                                      height: 60,
+                                      width: 80,
+                                    ),
+                                  ),
+                                );
+                              }),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ));
   }
 }

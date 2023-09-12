@@ -10,9 +10,11 @@ class HomeWidget extends StatelessWidget {
   const HomeWidget({
     super.key,
     required Future<List<Product>> male,
+    required this.tabIndex,
   }) : _male = male;
 
   final Future<List<Product>> _male;
+  final int tabIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +61,14 @@ class HomeWidget extends StatelessWidget {
                     style: appstyle(24, Colors.black, FontWeight.bold),
                   ),
                   GestureDetector(
-                    onTap: (){
-                      const ProductByCat();
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ProductByCat(tabIndex: tabIndex),
+                        ),
+                      );
                     },
                     child: Row(
                       children: [
