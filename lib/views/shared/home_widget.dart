@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_shopping_app/controllers/product_provider.dart';
+import 'package:flutter_shopping_app/views/ui/product_page.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
 import '../ui/product_by_cat.dart';
@@ -18,6 +21,7 @@ class HomeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var productNotifier = Provider.of<ProductNotifier>(context);
     return Column(
       children: [
         SizedBox(
@@ -35,13 +39,23 @@ class HomeWidget extends StatelessWidget {
                   itemCount: male!.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
-                    final shoes = snapshot.data![index];
-                    return ProductCart(
-                      price: "\$${shoes.price}",
-                      category: shoes.category,
-                      name: shoes.name,
-                      image: shoes.imageUrl[0],
-                      id: shoes.id,
+                    final product = snapshot.data![index];
+                    return GestureDetector(
+                      onTap: () {
+                        productNotifier.productSizes = product.sizes;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProductPage(
+                                    id: product.id, catogory: product.category)));
+                      },
+                      child: ProductCart(
+                        price: "\$${product.price}",
+                        category: product.category,
+                        name: product.name,
+                        image: product.imageUrl[0],
+                        id: product.id,
+                      ),
                     );
                   },
                 );
@@ -103,13 +117,13 @@ class HomeWidget extends StatelessWidget {
                   itemCount: male!.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
-                    final shoes = snapshot.data![index];
+                    final product = snapshot.data![index];
 
                     // Check if imageUrl is not empty and contains at least two elements
-                    if (shoes.imageUrl.isNotEmpty &&
-                        shoes.imageUrl.length > 1) {
+                    if (product.imageUrl.isNotEmpty &&
+                        product.imageUrl.length > 1) {
                       return NewProduct(
-                        imageUrl: shoes.imageUrl[1],
+                        imageUrl: product.imageUrl[1],
                       );
                     } else {
                       // Handle the case where imageUrl is empty or doesn't have enough elements

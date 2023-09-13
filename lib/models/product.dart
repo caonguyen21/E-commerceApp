@@ -9,7 +9,7 @@ class Product {
   final String category;
   final List<String> imageUrl;
   final String oldPrice;
-  final List<Size> sizes;
+  final List<dynamic> sizes;
   final String price;
   final String description;
   final String title;
@@ -27,17 +27,13 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    List<dynamic> sizeList = json['sizes'] ?? [];
-    List<Size> sizes =
-        sizeList.map((sizeJson) => Size.fromJson(sizeJson)).toList();
-
     return Product(
       id: json['id'] ?? "",
       name: json['name'] ?? "",
       category: json['category'] ?? "",
       imageUrl: (json['imageUrl'] as List<dynamic>).cast<String>(),
       oldPrice: json['oldPrice'] ?? "",
-      sizes: sizes,
+      sizes: List<dynamic>.from(json["sizes"].map((x) => x)),
       price: json['price'] ?? "",
       description: json['description'] ?? "",
       title: json['title'] ?? "",
@@ -45,19 +41,3 @@ class Product {
   }
 }
 
-class Size {
-  final String size;
-  final bool isSelected;
-
-  Size({
-    required this.size,
-    required this.isSelected,
-  });
-
-  factory Size.fromJson(Map<String, dynamic> json) {
-    return Size(
-      size: json['size'] ?? "",
-      isSelected: json['isSelected'] ?? false,
-    );
-  }
-}

@@ -3,6 +3,7 @@ import 'package:flutter_shopping_app/controllers/mainscreen_provider.dart';
 import 'package:flutter_shopping_app/views/ui/cartpage.dart';
 import 'package:flutter_shopping_app/views/ui/favoritepage.dart';
 import 'package:flutter_shopping_app/views/ui/homepage.dart';
+import 'package:flutter_shopping_app/views/ui/product_page.dart';
 import 'package:flutter_shopping_app/views/ui/profilepage.dart';
 import 'package:flutter_shopping_app/views/ui/searchpage.dart';
 import 'package:provider/provider.dart';
