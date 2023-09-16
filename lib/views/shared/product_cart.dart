@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
 
 class ProductCart extends StatefulWidget {
-  const ProductCart(
-      {super.key,
-      required this.price,
-      required this.category,
-      required this.name,
-      required this.image,
-      required String id});
+  const ProductCart({super.key, required this.price, required this.category, required this.name, required this.image, required String id});
 
   final String price;
   final String category;
@@ -33,13 +27,8 @@ class _ProductCartState extends State<ProductCart> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width * 0.6,
-          decoration: const BoxDecoration(boxShadow: [
-            BoxShadow(
-                color: Colors.white,
-                spreadRadius: 1,
-                blurRadius: 0.6,
-                offset: Offset(1, 1))
-          ]),
+          decoration:
+              const BoxDecoration(boxShadow: [BoxShadow(color: Colors.white, spreadRadius: 1, blurRadius: 0.6, offset: Offset(1, 1))]),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -47,9 +36,7 @@ class _ProductCartState extends State<ProductCart> {
                 children: [
                   Container(
                     height: MediaQuery.of(context).size.height * 0.23,
-                    decoration: BoxDecoration(
-                        image:
-                            DecorationImage(image: NetworkImage(widget.image))),
+                    decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(widget.image))),
                   ),
                   Positioned(
                     right: 10,
@@ -60,22 +47,23 @@ class _ProductCartState extends State<ProductCart> {
                   )
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.name,
-                      style: appstyleWithHt(
-                          30, Colors.black, FontWeight.bold, 1.1),
-                    ),
-                    Text(
-                      widget.category,
-                      style:
-                          appstyleWithHt(18, Colors.grey, FontWeight.bold, 1.5),
-                    )
-                  ],
+              SizedBox(
+                height: 93,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.name,
+                        style: appstyleWithHt(30, Colors.black, FontWeight.bold, 1.1),
+                      ),
+                      Text(
+                        widget.category,
+                        style: appstyleWithHt(18, Colors.grey, FontWeight.bold, 1.5),
+                      )
+                    ],
+                  ),
                 ),
               ),
               Padding(

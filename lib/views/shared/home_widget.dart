@@ -44,10 +44,7 @@ class HomeWidget extends StatelessWidget {
                       onTap: () {
                         productNotifier.productSizes = product.sizes;
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ProductPage(
-                                    id: product.id, catogory: product.category)));
+                            context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, catogory: product.category)));
                       },
                       child: ProductCart(
                         price: "\$${product.price}",
@@ -79,8 +76,7 @@ class HomeWidget extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              ProductByCat(tabIndex: tabIndex),
+                          builder: (context) => ProductByCat(tabIndex: tabIndex),
                         ),
                       );
                     },
@@ -120,10 +116,16 @@ class HomeWidget extends StatelessWidget {
                     final product = snapshot.data![index];
 
                     // Check if imageUrl is not empty and contains at least two elements
-                    if (product.imageUrl.isNotEmpty &&
-                        product.imageUrl.length > 1) {
-                      return NewProduct(
-                        imageUrl: product.imageUrl[1],
+                    if (product.imageUrl.isNotEmpty && product.imageUrl.length > 1) {
+                      return GestureDetector(
+                        onTap: () {
+                          productNotifier.productSizes = product.sizes;
+                          Navigator.push(
+                              context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, catogory: product.category)));
+                        },
+                        child: NewProduct(
+                          imageUrl: product.imageUrl[1],
+                        ),
                       );
                     } else {
                       // Handle the case where imageUrl is empty or doesn't have enough elements

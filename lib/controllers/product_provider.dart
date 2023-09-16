@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 class ProductNotifier extends ChangeNotifier {
   int _activepage = 0;
   List<dynamic> _productSizes = [];
+  List<String> _sizes = [];
 
   int get activepage => _activepage;
 
@@ -22,5 +23,12 @@ class ProductNotifier extends ChangeNotifier {
     if (index >= 0 && index < _productSizes.length) {
       _productSizes[index]['isSelected'] = !_productSizes[index]['isSelected'];
     }
+  }
+
+  List<String> get sizes => _sizes;
+
+  set sizes(List<String> newSizes) {
+    _sizes = newSizes;
+    notifyListeners();
   }
 }

@@ -51,10 +51,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               Container(
                 padding: const EdgeInsets.fromLTRB(16, 45, 0, 0),
                 height: MediaQuery.of(context).size.height * 0.4,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/images/top_image.png"),
-                        fit: BoxFit.fill)),
+                decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/top_image.png"), fit: BoxFit.fill)),
                 child: Container(
                   padding: const EdgeInsets.only(left: 8, bottom: 15),
                   width: MediaQuery.of(context).size.width,
@@ -62,13 +59,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "ThaoNguyen Store",
-                        style: appstyleWithHt(
-                            38, Colors.white, FontWeight.bold, 1.5),
+                        "Meadow Store",
+                        style: appstyleWithHt(46, Colors.white, FontWeight.bold, 1.5),
                       ),
-                      Text("Collection",
-                          style: appstyleWithHt(
-                              36, Colors.white, FontWeight.bold, 1.5)),
+                      Text("Collection", style: appstyleWithHt(36, Colors.white, FontWeight.bold, 1.2)),
                       TabBar(
                           padding: EdgeInsets.zero,
                           indicatorSize: TabBarIndicatorSize.label,
@@ -76,8 +70,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           controller: _tabController,
                           isScrollable: true,
                           labelColor: Colors.white,
-                          labelStyle:
-                              appstyle(24, Colors.white, FontWeight.bold),
+                          labelStyle: appstyle(24, Colors.white, FontWeight.bold),
                           unselectedLabelColor: Colors.grey.withOpacity(0.3),
                           tabs: const [
                             Tab(
@@ -95,8 +88,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.265),
+                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.265),
                 child: Container(
                   padding: const EdgeInsets.only(left: 12),
                   child: TabBarView(controller: _tabController, children: [

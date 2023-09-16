@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_shopping_app/views/shared/stagger_tile.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 
+import '../../controllers/product_provider.dart';
 import '../../models/product.dart';
+import '../ui/product_page.dart';
 
 class LatesProduct extends StatelessWidget {
   const LatesProduct({
@@ -14,6 +17,7 @@ class LatesProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var productNotifier = Provider.of<ProductNotifier>(context);
     return FutureBuilder<List<Product>>(
       future: _male,
       builder: (context, snapshot) {
@@ -33,19 +37,21 @@ class LatesProduct extends StatelessWidget {
             scrollDirection: Axis.vertical,
             staggeredTileBuilder: (index) => StaggeredTile.extent(
               (index % 2 == 0) ? 1 : 1,
-              (index % 4 == 1 || index % 4 == 3)
-                  ? MediaQuery.of(context).size.height * 0.35
-                  : MediaQuery.of(context).size.height * 0.31,
+              (index % 4 == 1 || index % 4 == 3) ? MediaQuery.of(context).size.height * 0.35 : MediaQuery.of(context).size.height * 0.31,
             ),
             itemBuilder: (context, index) {
-              final shoes = snapshot.data![index];
+              final product = snapshot.data![index];
 
-              // Make sure that shoes.imageUrl has at least two elements
-              if (shoes.imageUrl.length >= 2) {
-                return StaggerTile(
-                    imageUrl: shoes.imageUrl[1],
-                    name: shoes.name,
-                    price: "\$${shoes.price}");
+              // Make sure that product.imageUrl has at least two elements
+              if (product.imageUrl.length >= 2) {
+                return GestureDetector(
+                  onTap: () {
+                    productNotifier.productSizes = product.sizes;
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, catogory: product.category)));
+                  },
+                  child: StaggerTile(imageUrl: product.imageUrl[1], name: product.name, price: "\$${product.price}"),
+                );
               } else {
                 // Handle the case where imageUrl doesn't have enough elements
                 return const SizedBox();

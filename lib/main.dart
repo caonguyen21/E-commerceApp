@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_shopping_app/controllers/mainscreen_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final appDocumentDirectory =
+  await path_provider.getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDirectory.path);
+  await Hive.openBox('cart_box');
+  await Hive.openBox('fav_box');
 
-void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => MainScreenNotifier()),
     ChangeNotifierProvider(create: (context) => ProductNotifier())
