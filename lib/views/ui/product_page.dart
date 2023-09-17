@@ -5,12 +5,14 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/services/helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
+import '../../controllers/constants.dart';
 import '../../models/product.dart';
 import '../shared/checkout_btn.dart';
+import 'favoritepage.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key, required this.id, required this.catogory});
@@ -26,6 +28,22 @@ class _ProductPageState extends State<ProductPage> {
   final PageController pageController = PageController();
   late Future<Product> _product;
   final _cartBox = Hive.box('cart_box');
+  final _favBox = Hive.box("fav_box");
+
+  Future<void> _createFav(Map<String, dynamic> addFav) async {
+    await _favBox.add(addFav);
+    getFavorites();
+  }
+
+  getFavorites() {
+    final favData = _favBox.keys.map((key) {
+      final item = _favBox.get(key);
+      return {"key": key, "id": item['id']};
+    }).toList();
+    favor = favData.toList();
+    ids = favor.map((item) => item['id']).toList();
+    setState(() {});
+  }
 
   void getProduct() {
     if (widget.catogory == "Men's Running") {
@@ -45,7 +63,7 @@ class _ProductPageState extends State<ProductPage> {
 
   Future<void> _createCart(Map<String, dynamic> newCart) async {
     await _cartBox.add(newCart);
-   // print(newCart);
+    // print(newCart);
   }
 
   @override
@@ -82,7 +100,7 @@ class _ProductPageState extends State<ProductPage> {
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  // productNotifier.productSizes.clear();
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
                                 },
                                 child: const Icon(
                                   Icons.close,
@@ -90,11 +108,28 @@ class _ProductPageState extends State<ProductPage> {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: null,
-                                child: const Icon(
-                                  FontAwesomeIcons.ellipsis,
-                                  color: Colors.black,
-                                ),
+                                onTap: () {
+                                  if (ids.contains(widget.id)) {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritePage()));
+                                  } else {
+                                    _createFav({
+                                      "id": product?.id ?? '',
+                                      "name": product?.name ?? '',
+                                      "category": product?.category ?? '',
+                                      "price": product?.price ?? 0.0,
+                                      "imageUrl": product?.imageUrl?.isNotEmpty == true ? product?.imageUrl![0] : ''
+                                    });
+                                  }
+                                },
+                                child: ids.contains(widget.id)
+                                    ? Icon(
+                                        Icons.favorite,
+                                        color: Colors.black,
+                                      )
+                                    : Icon(
+                                        Icons.favorite_border,
+                                        color: Colors.black,
+                                      ),
                               )
                             ],
                           ),
@@ -129,14 +164,14 @@ class _ProductPageState extends State<ProductPage> {
                                               fit: BoxFit.contain,
                                             ),
                                           ),
-                                          Positioned(
-                                            top: MediaQuery.of(context).size.height * 0.1,
-                                            right: 20,
-                                            child: const Icon(
-                                              FontAwesomeIcons.heart,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
+                                          // Positioned(
+                                          //   top: MediaQuery.of(context).size.height * 0.1,
+                                          //   right: 20,
+                                          //   child: const Icon(
+                                          //     FontAwesomeIcons.heart,
+                                          //     color: Colors.grey,
+                                          //   ),
+                                          // ),
                                           Positioned(
                                               bottom: 0,
                                               right: 0,
@@ -351,7 +386,7 @@ class _ProductPageState extends State<ProductPage> {
                                                         "id": product.id,
                                                         "name": product.name,
                                                         "category": product.category,
-                                                        "sizes": List.from(productNotifier.sizes),  // Create a copy of sizes
+                                                        "sizes": List.from(productNotifier.sizes), // Create a copy of sizes
                                                         "imageUrl": product.imageUrl[0],
                                                         "price": product.price,
                                                         "qty": 1
