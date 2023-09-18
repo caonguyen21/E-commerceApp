@@ -25,6 +25,10 @@ class CartProvider with ChangeNotifier {
     // Don't notify listeners here
   }
 
+  Future<void> createCart(Map<String, dynamic> newCart) async {
+    await _cartBox.add(newCart);
+  }
+
   Future<void> deleteCart(int key) async {
     await _cartBox.delete(key);
     notifyListeners(); // Notify listeners after deleting an item

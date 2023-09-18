@@ -3,9 +3,9 @@ import 'package:flutter_shopping_app/views/shared/category_btn.dart';
 import 'package:flutter_shopping_app/views/shared/custom_spacer.dart';
 import 'package:flutter_shopping_app/views/shared/lates_product.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
-import '../../models/product.dart';
-import '../../services/helper.dart';
+import '../../controllers/product_provider.dart';
 import '../shared/appstyle.dart';
 
 class ProductByCat extends StatefulWidget {
@@ -17,33 +17,13 @@ class ProductByCat extends StatefulWidget {
   State<ProductByCat> createState() => _ProductByCatState();
 }
 
-class _ProductByCatState extends State<ProductByCat>
-    with SingleTickerProviderStateMixin {
+class _ProductByCatState extends State<ProductByCat> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-
-  late Future<List<Product>> _male;
-  late Future<List<Product>> _female;
-  late Future<List<Product>> _kids;
-
-  void getMale() {
-    _male = Helper().getMaleProducts();
-  }
-
-  void getFemale() {
-    _female = Helper().getFemaleProducts();
-  }
-
-  void getKids() {
-    _kids = Helper().getKidsProducts();
-  }
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    getMale();
-    getFemale();
-    getKids();
     _tabController.index = widget.tabIndex;
   }
 
@@ -53,15 +33,14 @@ class _ProductByCatState extends State<ProductByCat>
     super.dispose();
   }
 
-  List<String> brand = [
-    "assets/images/adidas.png",
-    "assets/images/gucci.png",
-    "assets/images/jordan.png",
-    "assets/images/nike.png"
-  ];
+  List<String> brand = ["assets/images/adidas.png", "assets/images/gucci.png", "assets/images/jordan.png", "assets/images/nike.png"];
 
   @override
   Widget build(BuildContext context) {
+    var productNotifier = Provider.of<ProductNotifier>(context);
+    productNotifier.getMale();
+    productNotifier.getFemale();
+    productNotifier.getKids();
     return Scaffold(
         backgroundColor: const Color(0xFFE2E2E2),
         body: SizedBox(
@@ -71,10 +50,7 @@ class _ProductByCatState extends State<ProductByCat>
               Container(
                 padding: const EdgeInsets.fromLTRB(16, 45, 0, 0),
                 height: MediaQuery.of(context).size.height * 0.4,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/images/top_image.png"),
-                        fit: BoxFit.fill)),
+                decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/top_image.png"), fit: BoxFit.fill)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -128,18 +104,15 @@ class _ProductByCatState extends State<ProductByCat>
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.185,
-                    left: 16,
-                    right: 12),
+                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.185, left: 16, right: 12),
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(16)),
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      LatesProduct(male: _male),
-                      LatesProduct(male: _female),
-                      LatesProduct(male: _kids),
+                      LatesProduct(male: productNotifier.male),
+                      LatesProduct(male: productNotifier.female),
+                      LatesProduct(male: productNotifier.kids),
                     ],
                   ),
                 ),
@@ -159,10 +132,7 @@ class _ProductByCatState extends State<ProductByCat>
         builder: (context) => Container(
               height: MediaQuery.of(context).size.height * 0.84,
               decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(25),
-                      topRight: Radius.circular(25))),
+                  color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25))),
               child: Column(
                 children: [
                   const SizedBox(
@@ -171,9 +141,7 @@ class _ProductByCatState extends State<ProductByCat>
                   Container(
                     height: 5,
                     width: 40,
-                    decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        color: Colors.black38),
+                    decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)), color: Colors.black38),
                   ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.8,
@@ -194,12 +162,9 @@ class _ProductByCatState extends State<ProductByCat>
                         ),
                         Row(
                           children: const [
-                            CategoryBtn(
-                                buttonColor: Colors.black, label: "Men"),
-                            CategoryBtn(
-                                buttonColor: Colors.grey, label: "Women"),
-                            CategoryBtn(
-                                buttonColor: Colors.grey, label: "Kids"),
+                            CategoryBtn(buttonColor: Colors.black, label: "Men"),
+                            CategoryBtn(buttonColor: Colors.grey, label: "Women"),
+                            CategoryBtn(buttonColor: Colors.grey, label: "Kids"),
                           ],
                         ),
                         const CustomSpacer(),
@@ -212,12 +177,9 @@ class _ProductByCatState extends State<ProductByCat>
                         ),
                         Row(
                           children: const [
-                            CategoryBtn(
-                                buttonColor: Colors.black, label: "Shoes"),
-                            CategoryBtn(
-                                buttonColor: Colors.grey, label: "Apparrels"),
-                            CategoryBtn(
-                                buttonColor: Colors.grey, label: "Accessori"),
+                            CategoryBtn(buttonColor: Colors.black, label: "Shoes"),
+                            CategoryBtn(buttonColor: Colors.grey, label: "Apparrels"),
+                            CategoryBtn(buttonColor: Colors.grey, label: "Accessori"),
                           ],
                         ),
                         const CustomSpacer(),
@@ -255,9 +217,7 @@ class _ProductByCatState extends State<ProductByCat>
                                   padding: const EdgeInsets.all(8),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                        color: Colors.grey.shade200,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(12))),
+                                        color: Colors.grey.shade200, borderRadius: const BorderRadius.all(Radius.circular(12))),
                                     child: Image.asset(
                                       brand[index],
                                       color: Colors.black,

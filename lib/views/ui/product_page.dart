@@ -2,12 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_shopping_app/controllers/cart_provider.dart';
 import 'package:flutter_shopping_app/controllers/favorites_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
-import 'package:flutter_shopping_app/services/helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
@@ -26,43 +25,17 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   final PageController pageController = PageController();
-  late Future<Product> _product;
-  final _cartBox = Hive.box('cart_box');
-
-  void getProduct() {
-    if (widget.catogory == "Men's Running") {
-      _product = Helper().getMaleProductsById(widget.id);
-    } else if (widget.catogory == "Women's Running") {
-      _product = Helper().getFemaleProductsById(widget.id);
-    } else {
-      _product = Helper().getMaleProductsById(widget.id);
-    }
-    _product.catchError((error) {
-      // Handle errors here, e.g., show an error message to the user.
-      if (kDebugMode) {
-        print('Error fetching product: $error');
-      }
-    });
-  }
-
-  Future<void> _createCart(Map<String, dynamic> newCart) async {
-    await _cartBox.add(newCart);
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getProduct();
-  }
 
   @override
   Widget build(BuildContext context) {
-    var favoritesNotifier = Provider.of<FavoritesNotifier>(context, listen: true);
+    var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
+    var cartProvider = Provider.of<CartProvider>(context);
+    var productNotifier = Provider.of<ProductNotifier>(context);
+    productNotifier.getProduct(widget.catogory, widget.id);
     favoritesNotifier.getFavorites();
     return Scaffold(
       body: FutureBuilder<Product>(
-          future: _product,
+          future: productNotifier.product,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
@@ -362,7 +335,7 @@ class _ProductPageState extends State<ProductPage> {
                                                   onTap: () {
                                                     // Ensure sizes is not null and contains data
                                                     if (productNotifier.sizes.isNotEmpty) {
-                                                      _createCart({
+                                                      cartProvider.createCart({
                                                         "id": product.id,
                                                         "name": product.name,
                                                         "category": product.category,
@@ -371,7 +344,6 @@ class _ProductPageState extends State<ProductPage> {
                                                         "price": product.price,
                                                         "qty": 1
                                                       });
-
                                                       // Clear sizes in the productNotifier
                                                       productNotifier.sizes.clear();
 
