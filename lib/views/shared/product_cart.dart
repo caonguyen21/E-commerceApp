@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_shopping_app/controllers/constants.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
 import 'package:flutter_shopping_app/views/ui/favoritepage.dart';
-import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+
+import '../../controllers/favorites_provider.dart';
 
 class ProductCart extends StatefulWidget {
   const ProductCart({super.key, required this.price, required this.category, required this.name, required this.image, required this.id});
+
   final String id;
   final String price;
   final String category;
@@ -17,29 +19,12 @@ class ProductCart extends StatefulWidget {
 }
 
 class _ProductCartState extends State<ProductCart> {
-  final _favBox = Hive.box("fav_box");
-
-  Future<void> _createFav(Map<String, dynamic> addFav) async {
-    await _favBox.add(addFav);
-    getFavorites();
-  }
-
-  getFavorites() {
-    final favData = _favBox.keys.map((key) {
-      final item = _favBox.get(key);
-      return {"key": key, "id": item['id']};
-    }).toList();
-    favor = favData.toList();
-    ids = favor.map((item) => item['id']).toList();
-    setState(() {
-
-    });
-  }
-
-  bool selected = true;
-
   @override
   Widget build(BuildContext context) {
+    var favoritesNotifier = Provider.of<FavoritesNotifier>(context, listen: true);
+    favoritesNotifier.getFavorites();
+    String originalPrice = widget.price;
+    String extractedPrice = originalPrice.split('\$')[1].trim();
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 20, 0),
       child: ClipRRect(
@@ -61,25 +46,28 @@ class _ProductCartState extends State<ProductCart> {
                     decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(widget.image))),
                   ),
                   Positioned(
-                    right: 10,
-                    top: 10,
-                    child: GestureDetector(
-                      onTap: () {
-                        if (ids.contains(widget.id)) {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritePage()));
-                        } else {
-                          _createFav({
-                            "id": widget.id,
-                            "name": widget.name,
-                            "category": widget.category,
-                            "price": widget.price,
-                            "imageUrl": widget.image,
-                          });
-                        }
-                      },
-                      child: ids.contains(widget.id) ? Icon(Icons.favorite) : Icon(Icons.favorite_outline),
-                    ),
-                  )
+                      right: 10,
+                      top: 10,
+                      child: Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
+                        return GestureDetector(
+                          onTap: () {
+                            if (favoritesNotifier.ids.contains(widget.id)) {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
+                            } else {
+                              favoritesNotifier.createFav({
+                                "id": widget.id,
+                                "name": widget.name,
+                                "category": widget.category,
+                                "price": extractedPrice,
+                                "imageUrl": widget.image,
+                              });
+                            }
+                            setState(() {});
+                          },
+                          child:
+                              favoritesNotifier.ids.contains(widget.id) ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
+                        );
+                      }))
                 ],
               ),
               SizedBox(

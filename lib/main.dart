@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_shopping_app/controllers/favorites_provider.dart';
 import 'package:flutter_shopping_app/controllers/mainscreen_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+
+import 'controllers/cart_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final appDocumentDirectory =
@@ -15,7 +18,9 @@ void main() async {
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => MainScreenNotifier()),
-    ChangeNotifierProvider(create: (context) => ProductNotifier())
+    ChangeNotifierProvider(create: (context) => ProductNotifier()),
+    ChangeNotifierProvider(create: (context) => CartProvider()),
+    ChangeNotifierProvider(create: (context) => FavoritesNotifier()),
   ], child: const MyApp()));
 }
 

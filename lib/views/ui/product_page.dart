@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_shopping_app/controllers/favorites_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/services/helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
-import '../../controllers/constants.dart';
 import '../../models/product.dart';
 import '../shared/checkout_btn.dart';
 import 'favoritepage.dart';
@@ -28,22 +28,6 @@ class _ProductPageState extends State<ProductPage> {
   final PageController pageController = PageController();
   late Future<Product> _product;
   final _cartBox = Hive.box('cart_box');
-  final _favBox = Hive.box("fav_box");
-
-  Future<void> _createFav(Map<String, dynamic> addFav) async {
-    await _favBox.add(addFav);
-    getFavorites();
-  }
-
-  getFavorites() {
-    final favData = _favBox.keys.map((key) {
-      final item = _favBox.get(key);
-      return {"key": key, "id": item['id']};
-    }).toList();
-    favor = favData.toList();
-    ids = favor.map((item) => item['id']).toList();
-    setState(() {});
-  }
 
   void getProduct() {
     if (widget.catogory == "Men's Running") {
@@ -63,7 +47,6 @@ class _ProductPageState extends State<ProductPage> {
 
   Future<void> _createCart(Map<String, dynamic> newCart) async {
     await _cartBox.add(newCart);
-    // print(newCart);
   }
 
   @override
@@ -75,6 +58,8 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
+    var favoritesNotifier = Provider.of<FavoritesNotifier>(context, listen: true);
+    favoritesNotifier.getFavorites();
     return Scaffold(
       body: FutureBuilder<Product>(
           future: _product,
@@ -107,30 +92,33 @@ class _ProductPageState extends State<ProductPage> {
                                   color: Colors.black,
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  if (ids.contains(widget.id)) {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritePage()));
-                                  } else {
-                                    _createFav({
-                                      "id": product?.id ?? '',
-                                      "name": product?.name ?? '',
-                                      "category": product?.category ?? '',
-                                      "price": product?.price ?? 0.0,
-                                      "imageUrl": product?.imageUrl?.isNotEmpty == true ? product?.imageUrl![0] : ''
-                                    });
-                                  }
-                                },
-                                child: ids.contains(widget.id)
-                                    ? Icon(
-                                        Icons.favorite,
-                                        color: Colors.black,
-                                      )
-                                    : Icon(
-                                        Icons.favorite_border,
-                                        color: Colors.black,
-                                      ),
-                              )
+                              Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    if (favoritesNotifier.ids.contains(widget.id)) {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
+                                    } else {
+                                      favoritesNotifier.createFav({
+                                        "id": product?.id ?? '',
+                                        "name": product?.name ?? '',
+                                        "category": product?.category ?? '',
+                                        "price": product?.price ?? 0.0,
+                                        "imageUrl": product?.imageUrl.isNotEmpty == true ? product?.imageUrl[0] : ''
+                                      });
+                                      setState(() {});
+                                    }
+                                  },
+                                  child: favoritesNotifier.ids.contains(widget.id)
+                                      ? const Icon(
+                                          Icons.favorite,
+                                          color: Colors.black,
+                                        )
+                                      : const Icon(
+                                          Icons.favorite_border,
+                                          color: Colors.black,
+                                        ),
+                                );
+                              })
                             ],
                           ),
                         ),
@@ -164,14 +152,6 @@ class _ProductPageState extends State<ProductPage> {
                                               fit: BoxFit.contain,
                                             ),
                                           ),
-                                          // Positioned(
-                                          //   top: MediaQuery.of(context).size.height * 0.1,
-                                          //   right: 20,
-                                          //   child: const Icon(
-                                          //     FontAwesomeIcons.heart,
-                                          //     color: Colors.grey,
-                                          //   ),
-                                          // ),
                                           Positioned(
                                               bottom: 0,
                                               right: 0,
@@ -377,11 +357,11 @@ class _ProductPageState extends State<ProductPage> {
                                           Align(
                                               alignment: Alignment.bottomCenter,
                                               child: Padding(
-                                                padding: EdgeInsets.only(top: 10),
+                                                padding: const EdgeInsets.only(top: 10),
                                                 child: CheckoutBtn(
                                                   onTap: () {
                                                     // Ensure sizes is not null and contains data
-                                                    if (productNotifier.sizes != null && productNotifier.sizes.isNotEmpty) {
+                                                    if (productNotifier.sizes.isNotEmpty) {
                                                       _createCart({
                                                         "id": product.id,
                                                         "name": product.name,
@@ -400,7 +380,9 @@ class _ProductPageState extends State<ProductPage> {
                                                     } else {
                                                       // Handle the case where sizes is empty or null
                                                       // You might want to show a message to the user or take appropriate action.
-                                                      print('Sizes data is empty or null.');
+                                                      if (kDebugMode) {
+                                                        print('Sizes data is empty or null.');
+                                                      }
                                                     }
                                                   },
                                                   label: 'Add to bag',

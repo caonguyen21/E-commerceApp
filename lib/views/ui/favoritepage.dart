@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
-import '../../controllers/constants.dart';
+import '../../controllers/favorites_provider.dart';
 import '../shared/appstyle.dart';
 import 'mainscreen.dart';
 
@@ -14,28 +14,10 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
-  final _favBox = Hive.box('fav_box');
-
-  _deleteFav(int key) async {
-    await _favBox.delete(key);
-  }
-
   @override
   Widget build(BuildContext context) {
-    List<dynamic> fav = [];
-    final favData = _favBox.keys.map((key) {
-      final item = _favBox.get(key);
-      return {
-        "key": key,
-        "id": item['id'],
-        "name": item['name'],
-        "category": item["category"],
-        "price": item["price"],
-        "imageUrl": item["imageUrl"],
-      };
-    }).toList();
-    fav = favData.reversed.toList();
-    print(favData);
+    var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
+    favoritesNotifier.getAllFav();
     return Scaffold(
         backgroundColor: const Color(0xFFE2E2E2),
         body: SizedBox(
@@ -58,10 +40,10 @@ class _FavoritePageState extends State<FavoritePage> {
               Padding(
                 padding: EdgeInsets.all(8),
                 child: ListView.builder(
-                    itemCount: fav.length,
+                    itemCount: favoritesNotifier.fav.length,
                     padding: EdgeInsets.only(top: 100),
                     itemBuilder: (BuildContext context, int index) {
-                      final product = fav[index];
+                      final product = favoritesNotifier.fav[index];
                       return Padding(
                         padding: EdgeInsets.all(8),
                         child: ClipRRect(
@@ -108,7 +90,7 @@ class _FavoritePageState extends State<FavoritePage> {
                                           ),
                                           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                                             Text(
-                                              "${product['price']}",
+                                              "\$${product['price']}",
                                               style: appstyle(18, Colors.black, FontWeight.w600),
                                             ),
                                           ]),
@@ -121,8 +103,8 @@ class _FavoritePageState extends State<FavoritePage> {
                                   padding: EdgeInsets.all(8),
                                   child: GestureDetector(
                                     onTap: () {
-                                      _deleteFav(product['key']);
-                                      ids.removeWhere((element) => element == product['id']);
+                                      favoritesNotifier.deleteFav(product['key']);
+                                      favoritesNotifier.ids.removeWhere((element) => element == product['id']);
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
                                     },
                                     child: Icon(Icons.heart_broken),

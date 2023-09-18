@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_shopping_app/controllers/cart_provider.dart';
 import 'package:flutter_shopping_app/views/shared/checkout_btn.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 import '../shared/appstyle.dart';
+import 'mainscreen.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -15,89 +17,10 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  final _cartBox = Hive.box('cart_box');
-  List<Map<String, dynamic>> cartData = [];
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _loadCartData();
-  }
-
-  void _loadCartData() {
-    setState(() {
-      cartData = _cartBox.keys.map((key) {
-        final item = _cartBox.get(key);
-        return {
-          "key": key,
-          "id": item['id'],
-          "category": item['category'],
-          "name": item['name'],
-          "price": item['price'],
-          "qty": item['qty'],
-          "sizes": item['sizes'],
-          "imageUrl": item['imageUrl'],
-        };
-      }).toList();
-    });
-  }
-
-  void deleteCartItem(int index) {
-    setState(() {
-      // Remove the item from the cartData list
-      cartData.removeAt(index);
-
-      // Remove the item from the Hive box
-      final itemKey = _cartBox.keyAt(index);
-      _cartBox.delete(itemKey);
-    });
-  }
-
-  void incrementQuantity(int index) {
-    setState(() {
-      cartData[index]['qty']++;
-      updateCartItem(index);
-    });
-  }
-
-  void decrementQuantity(int index) {
-    setState(() {
-      if (cartData[index]['qty'] > 1) {
-        cartData[index]['qty']--;
-        updateCartItem(index);
-      }
-    });
-  }
-
-  String multiplyPriceByQuantity(String price, int qty) {
-    // Remove any leading '$' and convert the price string to a double
-    double priceNumeric = double.parse(price.replaceAll('\$', ''));
-
-    // Multiply by the quantity
-    double totalPrice = priceNumeric * qty;
-
-    // Format the result to display with 2 decimal places
-    String formattedTotalPrice = totalPrice.toStringAsFixed(2);
-
-    return '\$$formattedTotalPrice'; // Add '$' and display with .00
-  }
-
-  void updateCartItem(int index) {
-    String priceString = cartData[index]['price'];
-    int quantity = cartData[index]['qty'];
-
-    // Calculate the total price based on quantity
-    String totalPrice = multiplyPriceByQuantity(priceString, quantity);
-
-    cartData[index]['totalPrice'] = totalPrice;
-
-    final itemKey = cartData[index]['key'];
-    _cartBox.put(itemKey, cartData[index]);
-  }
-
   @override
   Widget build(BuildContext context) {
+    var cartProvider = Provider.of<CartProvider>(context);
+    cartProvider.loadCartData();
     return Scaffold(
       backgroundColor: const Color(0xFFE2E2E2),
       body: Padding(
@@ -127,10 +50,11 @@ class _CartPageState extends State<CartPage> {
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.65,
                     child: ListView.builder(
-                        itemCount: cartData.length,
+                        itemCount: cartProvider.cart.length,
                         padding: EdgeInsets.zero,
                         itemBuilder: (context, index) {
-                          final data = cartData[index];
+                          final data = cartProvider.cart[index];
+                          final totalPrice = cartProvider.calculateTotalPrice(data['price'], data['qty']);
                           return Padding(
                             padding: const EdgeInsets.all(8),
                             child: ClipRRect(
@@ -146,7 +70,8 @@ class _CartPageState extends State<CartPage> {
                                       foregroundColor: Colors.white,
                                       icon: Icons.delete,
                                       onPressed: (context) {
-                                        deleteCartItem(index);
+                                        cartProvider.deleteCart(data['key']);
+                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
                                       },
                                       label: 'Delete',
                                     )
@@ -194,7 +119,7 @@ class _CartPageState extends State<CartPage> {
                                                 ),
                                                 Row(children: [
                                                   Text(
-                                                    '${cartData[index]['totalPrice'] ?? '\$${data['price']}'}',
+                                                    totalPrice,
                                                     style: appstyle(16, Colors.black, FontWeight.w600),
                                                   ),
                                                   const SizedBox(
@@ -229,7 +154,7 @@ class _CartPageState extends State<CartPage> {
                                                 children: [
                                                   InkWell(
                                                     onTap: () {
-                                                      decrementQuantity(index);
+                                                      cartProvider.decrementQuantity(index);
                                                     },
                                                     child: const Icon(
                                                       FontAwesomeIcons.minusSquare,
@@ -243,7 +168,7 @@ class _CartPageState extends State<CartPage> {
                                                   ),
                                                   InkWell(
                                                     onTap: () {
-                                                      incrementQuantity(index);
+                                                      cartProvider.incrementQuantity(index);
                                                     },
                                                     child: const Icon(
                                                       FontAwesomeIcons.plusSquare,
