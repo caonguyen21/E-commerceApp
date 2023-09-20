@@ -48,7 +48,7 @@ class LatesProduct extends StatelessWidget {
                   onTap: () {
                     productNotifier.productSizes = product.sizes;
                     Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, catogory: product.category)));
+                        context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, category: product.category)));
                   },
                   child: StaggerTile(imageUrl: product.imageUrl[1], name: product.name, price: "\$${product.price}"),
                 );

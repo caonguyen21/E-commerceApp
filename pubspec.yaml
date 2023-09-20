@@ -44,6 +44,7 @@ dependencies:
   flutter_rating_bar:
   hive:
   flutter_slidable: ^3.0.0
+  animations:
 dev_dependencies:
   flutter_test:
     sdk: flutter

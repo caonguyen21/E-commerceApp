@@ -44,7 +44,7 @@ class HomeWidget extends StatelessWidget {
                       onTap: () {
                         productNotifier.productSizes = product.sizes;
                         Navigator.push(
-                            context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, catogory: product.category)));
+                            context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, category: product.category)));
                       },
                       child: ProductCart(
                         price: "\$${product.price}",
@@ -121,7 +121,7 @@ class HomeWidget extends StatelessWidget {
                         onTap: () {
                           productNotifier.productSizes = product.sizes;
                           Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, catogory: product.category)));
+                              context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, category: product.category)));
                         },
                         child: NewProduct(
                           imageUrl: product.imageUrl[1],

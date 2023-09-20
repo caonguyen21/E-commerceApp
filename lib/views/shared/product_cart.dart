@@ -41,9 +41,12 @@ class _ProductCartState extends State<ProductCart> {
             children: [
               Stack(
                 children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.23,
-                    decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(widget.image))),
+                  RotationTransition(
+                    turns: const AlwaysStoppedAnimation(15 / 360),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.23,
+                      decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(widget.image))),
+                    ),
                   ),
                   Positioned(
                       right: 10,
@@ -67,26 +70,26 @@ class _ProductCartState extends State<ProductCart> {
                           child:
                               favoritesNotifier.ids.contains(widget.id) ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
                         );
-                      }))
+                      })),
                 ],
               ),
-              SizedBox(
-                height: 93,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
+              Padding(
+                padding: const EdgeInsets.only(left: 8, top: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(
                         widget.name,
                         style: appstyleWithHt(30, Colors.black, FontWeight.bold, 1.1),
                       ),
-                      Text(
-                        widget.category,
-                        style: appstyleWithHt(18, Colors.grey, FontWeight.bold, 1.5),
-                      )
-                    ],
-                  ),
+                    ),
+                    Text(
+                      widget.category,
+                      style: appstyleWithHt(18, Colors.grey, FontWeight.bold, 1.5),
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -98,27 +101,10 @@ class _ProductCartState extends State<ProductCart> {
                       widget.price,
                       style: appstyle(30, Colors.black, FontWeight.w600),
                     ),
-                    // Row(
-                    //   children: [
-                    //     Text(
-                    //       "Colors",
-                    //       style: appstyle(18, Colors.grey, FontWeight.w500),
-                    //     ),
-                    //     const SizedBox(
-                    //       width: 5,
-                    //     ),
-                    //     ChoiceChip(
-                    //       label: Text(" "),
-                    //       // Replace with your desired label text
-                    //       selected: selected,
-                    //       visualDensity: VisualDensity.compact,
-                    //       selectedColor: Colors.black,
-                    //     )
-                    //   ],
-                    // )
                   ],
                 ),
-              )
+              ),
+              const Padding(padding: EdgeInsets.only(left: 200), child: Icon(Icons.chevron_right))
             ],
           ),
         ),

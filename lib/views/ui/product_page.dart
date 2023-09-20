@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_shopping_app/controllers/cart_provider.dart';
@@ -11,13 +10,14 @@ import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
 import '../shared/checkout_btn.dart';
+import '../shared/size_guide_popup.dart';
 import 'favoritepage.dart';
 
 class ProductPage extends StatefulWidget {
-  const ProductPage({super.key, required this.id, required this.catogory});
+  const ProductPage({super.key, required this.id, required this.category});
 
   final String id;
-  final String catogory;
+  final String category;
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -25,13 +25,21 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   final PageController pageController = PageController();
+  late ProductNotifier productNotifier;
+  bool isDescriptionExpanded = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    productNotifier = Provider.of<ProductNotifier>(context, listen: false);
+    productNotifier.getProduct(widget.category, widget.id);
+  }
 
   @override
   Widget build(BuildContext context) {
     var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
     var cartProvider = Provider.of<CartProvider>(context);
-    var productNotifier = Provider.of<ProductNotifier>(context);
-    productNotifier.getProduct(widget.catogory, widget.id);
     favoritesNotifier.getFavorites();
     return Scaffold(
       body: FutureBuilder<Product>(
@@ -138,7 +146,7 @@ class _ProductPageState extends State<ProductPage> {
                                                     padding: const EdgeInsets.symmetric(horizontal: 4),
                                                     child: CircleAvatar(
                                                       radius: 5,
-                                                      backgroundColor: productNotifier.activepage != index ? Colors.grey : Colors.black,
+                                                      backgroundColor: productNotifier.activePage != index ? Colors.grey : Colors.black,
                                                     ),
                                                   ),
                                                 ),
@@ -200,32 +208,6 @@ class _ProductPageState extends State<ProductPage> {
                                                 "\$${product.price}",
                                                 style: appstyle(26, Colors.black, FontWeight.w600),
                                               ),
-                                              // Row(
-                                              //   children: [
-                                              //     Text(
-                                              //       "Colors",
-                                              //       style: appstyle(
-                                              //           18,
-                                              //           Colors.black,
-                                              //           FontWeight.w500),
-                                              //     ),
-                                              //     SizedBox(
-                                              //       width: 5,
-                                              //     ),
-                                              //     CircleAvatar(
-                                              //       radius: 7,
-                                              //       backgroundColor:
-                                              //           Colors.black,
-                                              //     ),
-                                              //     SizedBox(
-                                              //       width: 5,
-                                              //     ),
-                                              //     CircleAvatar(
-                                              //       radius: 7,
-                                              //       backgroundColor: Colors.red,
-                                              //     )
-                                              //   ],
-                                              // ),
                                             ],
                                           ),
                                           const SizedBox(
@@ -242,10 +224,20 @@ class _ProductPageState extends State<ProductPage> {
                                                   const SizedBox(
                                                     width: 20,
                                                   ),
-                                                  Text(
-                                                    "View size guide",
-                                                    style: appstyle(20, Colors.grey, FontWeight.w600),
-                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext context) {
+                                                          return ShoeSizeGuidePopup();
+                                                        },
+                                                      );
+                                                    },
+                                                    child: Text(
+                                                      "View Size Guide",
+                                                      style: appstyle(20, Colors.grey, FontWeight.w600),
+                                                    ),
+                                                  )
                                                 ],
                                               ),
                                               const SizedBox(
@@ -313,53 +305,64 @@ class _ProductPageState extends State<ProductPage> {
                                           ),
                                           SizedBox(
                                             width: MediaQuery.of(context).size.width * 0.8,
-                                            child: Text(
-                                              product.title,
-                                              style: appstyle(22, Colors.black, FontWeight.w700),
+                                            child: SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: Text(
+                                                product.title,
+                                                style: appstyle(22, Colors.black, FontWeight.w700),
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(
                                             height: 10,
                                           ),
-                                          Text(
-                                            product.description,
-                                            style: appstyle(14, Colors.black, FontWeight.normal),
-                                            textAlign: TextAlign.justify,
-                                            maxLines: 4,
+                                          SizedBox(
+                                            height: MediaQuery.of(context).size.height * 0.16,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  isDescriptionExpanded = !isDescriptionExpanded;
+                                                });
+                                              },
+                                              child: Text(
+                                                product.description,
+                                                style: appstyle(14, Colors.black, FontWeight.normal),
+                                                textAlign: TextAlign.justify,
+                                                maxLines: isDescriptionExpanded ? null : 4,
+                                              ),
+                                            ),
                                           ),
                                           Align(
-                                              alignment: Alignment.bottomCenter,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(top: 10),
-                                                child: CheckoutBtn(
-                                                  onTap: () {
-                                                    // Ensure sizes is not null and contains data
-                                                    if (productNotifier.sizes.isNotEmpty) {
-                                                      cartProvider.createCart({
-                                                        "id": product.id,
-                                                        "name": product.name,
-                                                        "category": product.category,
-                                                        "sizes": List.from(productNotifier.sizes), // Create a copy of sizes
-                                                        "imageUrl": product.imageUrl[0],
-                                                        "price": product.price,
-                                                        "qty": 1
-                                                      });
-                                                      // Clear sizes in the productNotifier
-                                                      productNotifier.sizes.clear();
+                                            alignment: Alignment.bottomCenter,
+                                            child: CheckoutBtn(
+                                              onTap: () {
+                                                // Ensure sizes is not null and contains data
+                                                if (productNotifier.sizes.isNotEmpty) {
+                                                  cartProvider.createCart({
+                                                    "id": product.id,
+                                                    "name": product.name,
+                                                    "category": product.category,
+                                                    "sizes": List.from(productNotifier.sizes), // Create a copy of sizes
+                                                    "imageUrl": product.imageUrl[0],
+                                                    "price": product.price,
+                                                    "qty": 1
+                                                  });
+                                                  // Clear sizes in the productNotifier
+                                                  productNotifier.sizes.clear();
 
-                                                      // Pop the current screen
-                                                      Navigator.pop(context);
-                                                    } else {
-                                                      // Handle the case where sizes is empty or null
-                                                      // You might want to show a message to the user or take appropriate action.
-                                                      if (kDebugMode) {
-                                                        print('Sizes data is empty or null.');
-                                                      }
-                                                    }
-                                                  },
-                                                  label: 'Add to bag',
-                                                ),
-                                              ))
+                                                  // Pop the current screen
+                                                  Navigator.pop(context);
+                                                } else {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text('No sizes available for this product.'),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              label: 'Add to bag',
+                                            ),
+                                          )
                                         ],
                                       ),
                                     ),

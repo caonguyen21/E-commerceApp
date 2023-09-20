@@ -4,14 +4,15 @@ import '../models/product.dart';
 import '../services/helper.dart';
 
 class ProductNotifier extends ChangeNotifier {
-  int _activepage = 0;
+
   List<dynamic> _productSizes = [];
   List<String> _sizes = [];
 
-  int get activepage => _activepage;
+  int _activePage = 0;
+  int get activePage => _activePage;
 
   set activePage(int newIndex) {
-    _activepage = newIndex;
+    _activePage = newIndex;
     notifyListeners();
   }
 
@@ -50,7 +51,6 @@ class ProductNotifier extends ChangeNotifier {
   void getKids() {
     kids = Helper().getKidsProducts();
   }
-
   late Future<Product> product;
 
   void getProduct(String category, id) {
