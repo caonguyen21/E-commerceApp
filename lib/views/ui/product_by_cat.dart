@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/views/shared/category_btn.dart';
 import 'package:flutter_shopping_app/views/shared/custom_spacer.dart';
 import 'package:flutter_shopping_app/views/shared/lates_product.dart';
@@ -48,14 +49,14 @@ class _ProductByCatState extends State<ProductByCat> with SingleTickerProviderSt
           child: Stack(
             children: [
               Container(
-                padding: const EdgeInsets.fromLTRB(16, 45, 0, 0),
-                height: MediaQuery.of(context).size.height * 0.4,
+                padding: EdgeInsets.fromLTRB(16.w, 45.h, 0, 0),
+                height: 325.h,
                 decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/top_image.png"), fit: BoxFit.fill)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(6, 12, 16, 12),
+                      padding: EdgeInsets.fromLTRB(6.w, 12.h, 16.w, 12.h),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/views/shared/home_widget.dart';
+import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:provider/provider.dart';
 
 import '../shared/appstyle.dart';
@@ -30,24 +32,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Scaffold(
         backgroundColor: const Color(0xFFE2E2E2),
         body: SizedBox(
-          height: MediaQuery.of(context).size.height,
+          height: 812.h,
+          width: 375.w,
           child: Stack(
             children: [
               Container(
-                padding: const EdgeInsets.fromLTRB(16, 45, 0, 0),
-                height: MediaQuery.of(context).size.height * 0.4,
+                padding: EdgeInsets.fromLTRB(16.w, 45.h, 0, 0),
+                height: 325.h,
                 decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/top_image.png"), fit: BoxFit.fill)),
                 child: Container(
-                  padding: const EdgeInsets.only(left: 8, bottom: 15),
-                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.only(left: 8.w, bottom: 15.h),
+                  width: 375.w,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Meadow Store",
-                        style: appstyleWithHt(46, Colors.white, FontWeight.bold, 1.5),
-                      ),
-                      Text("Collection", style: appstyleWithHt(36, Colors.white, FontWeight.bold, 1.2)),
+                      reusableText(text: "Meadow Store", style: appstyleWithHt(42, Colors.white, FontWeight.bold, 1.5)),
+                      reusableText(text: "Collection", style: appstyleWithHt(42, Colors.white, FontWeight.bold, 1.2)),
                       TabBar(
                           padding: EdgeInsets.zero,
                           indicatorSize: TabBarIndicatorSize.label,
@@ -73,9 +73,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.265),
+                padding: EdgeInsets.only(top: 203.h),
                 child: Container(
-                  padding: const EdgeInsets.only(left: 12),
+                  padding: EdgeInsets.only(left: 12.w),
                   child: TabBarView(controller: _tabController, children: [
                     HomeWidget(
                       male: productNotifier.male,

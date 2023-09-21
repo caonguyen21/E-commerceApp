@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
+import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:flutter_shopping_app/views/ui/favoritepage.dart';
 import 'package:provider/provider.dart';
 
@@ -26,14 +28,14 @@ class _ProductCartState extends State<ProductCart> {
     String originalPrice = widget.price;
     String extractedPrice = originalPrice.split('\$')[1].trim();
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 0, 20, 0),
+      padding: EdgeInsets.fromLTRB(8.w, 0, 20.w, 0),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(
           Radius.circular(16),
         ),
         child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width * 0.6,
+          height: 325.h,
+          width: 225.w,
           decoration:
               const BoxDecoration(boxShadow: [BoxShadow(color: Colors.white, spreadRadius: 1, blurRadius: 0.6, offset: Offset(1, 1))]),
           child: Column(
@@ -44,13 +46,13 @@ class _ProductCartState extends State<ProductCart> {
                   RotationTransition(
                     turns: const AlwaysStoppedAnimation(15 / 360),
                     child: Container(
-                      height: MediaQuery.of(context).size.height * 0.23,
+                      height: 186.h,
                       decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(widget.image))),
                     ),
                   ),
                   Positioned(
-                      right: 10,
-                      top: 10,
+                      right: 10.w,
+                      top: 10.h,
                       child: Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
                         return GestureDetector(
                           onTap: () {
@@ -74,37 +76,39 @@ class _ProductCartState extends State<ProductCart> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8, top: 6),
+                padding: EdgeInsets.only(left: 8.w, top: 6.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(
-                        widget.name,
-                        style: appstyleWithHt(30, Colors.black, FontWeight.bold, 1.1),
-                      ),
+                    reusableText(
+                      text: widget.name,
+                      style: appstyleWithHt(30, Colors.black, FontWeight.bold, 1.1),
                     ),
-                    Text(
-                      widget.category,
+                    reusableText(
+                      text: widget.category,
                       style: appstyleWithHt(18, Colors.grey, FontWeight.bold, 1.5),
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8),
+                padding: EdgeInsets.only(left: 8.w, right: 8.w),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      widget.price,
+                    reusableText(
+                      text: widget.price,
                       style: appstyle(30, Colors.black, FontWeight.w600),
                     ),
                   ],
                 ),
               ),
-              const Padding(padding: EdgeInsets.only(left: 200), child: Icon(Icons.chevron_right))
+              Padding(
+                  padding: EdgeInsets.only(left: 200.w),
+                  child: Icon(
+                    Icons.chevron_right,
+                    size: 20.w,
+                  ))
             ],
           ),
         ),

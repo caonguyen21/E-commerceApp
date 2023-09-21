@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/cart_provider.dart';
 import 'package:flutter_shopping_app/controllers/favorites_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
+import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
 import 'package:provider/provider.dart';
 
@@ -59,7 +61,7 @@ class _ProductPageState extends State<ProductPage> {
                         automaticallyImplyLeading: false,
                         leadingWidth: 0,
                         title: Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
+                          padding: EdgeInsets.only(bottom: 10.h),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -112,8 +114,8 @@ class _ProductPageState extends State<ProductPage> {
                           background: Stack(
                             children: [
                               SizedBox(
-                                height: MediaQuery.of(context).size.height * 0.5,
-                                width: MediaQuery.of(context).size.width,
+                                height: 401.h,
+                                width: 375.w,
                                 child: PageView.builder(
                                     scrollDirection: Axis.horizontal,
                                     itemCount: product!.imageUrl.length,
@@ -125,8 +127,8 @@ class _ProductPageState extends State<ProductPage> {
                                       return Stack(
                                         children: [
                                           Container(
-                                            height: MediaQuery.of(context).size.height * 0.39,
-                                            width: MediaQuery.of(context).size.width,
+                                            height: 316.h,
+                                            width: 375.w,
                                             color: Colors.grey.shade300,
                                             child: CachedNetworkImage(
                                               imageUrl: product.imageUrl[index],
@@ -143,7 +145,7 @@ class _ProductPageState extends State<ProductPage> {
                                                 children: List<Widget>.generate(
                                                   product.imageUrl.length,
                                                   (index) => Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                                    padding: EdgeInsets.symmetric(horizontal: 4.h),
                                                     child: CircleAvatar(
                                                       radius: 5,
                                                       backgroundColor: productNotifier.activePage != index ? Colors.grey : Colors.black,
@@ -161,25 +163,25 @@ class _ProductPageState extends State<ProductPage> {
                                   borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
                                   child: Container(
                                     height: MediaQuery.of(context).size.height * 0.645,
-                                    width: MediaQuery.of(context).size.width,
+                                    width: 375.w,
                                     color: Colors.white,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(12),
+                                      padding: EdgeInsets.all(12.h),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            product.name,
+                                          reusableText(
+                                            text: product.name,
                                             style: appstyle(40, Colors.black, FontWeight.bold),
                                           ),
                                           Row(
                                             children: [
-                                              Text(
-                                                product.name,
+                                              reusableText(
+                                                text: product.name,
                                                 style: appstyle(20, Colors.grey, FontWeight.w500),
                                               ),
-                                              const SizedBox(
-                                                width: 20,
+                                              SizedBox(
+                                                width: 20.w,
                                               ),
                                               RatingBar.builder(
                                                 initialRating: 4,
@@ -189,7 +191,7 @@ class _ProductPageState extends State<ProductPage> {
                                                 itemCount: 5,
                                                 itemSize: 22,
                                                 itemPadding: const EdgeInsets.symmetric(horizontal: 1),
-                                                itemBuilder: (context, _) => const Icon(Icons.star, size: 18, color: Colors.black),
+                                                itemBuilder: (context, _) => Icon(Icons.star, size: 18.h, color: Colors.black),
                                                 onRatingUpdate: (rating) {
                                                   // You can add your code here to handle the updated rating.
                                                   // print("New Rating: $rating");
@@ -198,8 +200,8 @@ class _ProductPageState extends State<ProductPage> {
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(
-                                            height: 10,
+                                          SizedBox(
+                                            height: 10.h,
                                           ),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -210,19 +212,19 @@ class _ProductPageState extends State<ProductPage> {
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(
-                                            height: 10,
+                                          SizedBox(
+                                            height: 10.h,
                                           ),
                                           Column(
                                             children: [
                                               Row(
                                                 children: [
-                                                  Text(
-                                                    "Select sizes",
+                                                  reusableText(
+                                                    text: "Select sizes",
                                                     style: appstyle(20, Colors.black, FontWeight.w600),
                                                   ),
-                                                  const SizedBox(
-                                                    width: 20,
+                                                  SizedBox(
+                                                    width: 20.w,
                                                   ),
                                                   GestureDetector(
                                                     onTap: () {
@@ -233,18 +235,18 @@ class _ProductPageState extends State<ProductPage> {
                                                         },
                                                       );
                                                     },
-                                                    child: Text(
-                                                      "View Size Guide",
+                                                    child: reusableText(
+                                                      text: "View Size Guide",
                                                       style: appstyle(20, Colors.grey, FontWeight.w600),
                                                     ),
                                                   )
                                                 ],
                                               ),
-                                              const SizedBox(
-                                                height: 5,
+                                              SizedBox(
+                                                height: 5.h,
                                               ),
                                               SizedBox(
-                                                height: 40,
+                                                height: 40.h,
                                                 child: ListView.builder(
                                                   itemCount: productNotifier.productSizes.length,
                                                   scrollDirection: Axis.horizontal,
@@ -307,7 +309,7 @@ class _ProductPageState extends State<ProductPage> {
                                             width: MediaQuery.of(context).size.width * 0.8,
                                             child: SingleChildScrollView(
                                               scrollDirection: Axis.horizontal,
-                                              child: Text(
+                                              child: reusableText(text:
                                                 product.title,
                                                 style: appstyle(22, Colors.black, FontWeight.w700),
                                               ),

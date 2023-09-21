@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
+import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:flutter_shopping_app/views/ui/product_page.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +27,7 @@ class HomeWidget extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.405,
+          height: 325.h,
           child: FutureBuilder<List<Product>>(
             future: _male,
             builder: (context, snapshot) {
@@ -63,12 +65,12 @@ class HomeWidget extends StatelessWidget {
         Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 20, 12, 20),
+              padding: EdgeInsets.fromLTRB(12.w, 20.h, 12.w, 20.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Latest Shoes",
+                  reusableText(
+                    text: "Latest Shoes",
                     style: appstyle(24, Colors.black, FontWeight.bold),
                   ),
                   GestureDetector(
@@ -82,13 +84,13 @@ class HomeWidget extends StatelessWidget {
                     },
                     child: Row(
                       children: [
-                        Text(
-                          "Show All",
+                        reusableText(
+                          text: "Show All",
                           style: appstyle(22, Colors.black, FontWeight.w500),
                         ),
-                        const Icon(
+                        Icon(
                           Icons.chevron_right,
-                          size: 25,
+                          size: 25.h,
                         )
                       ],
                     ),
@@ -99,7 +101,7 @@ class HomeWidget extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.13,
+          height: 99.h,
           child: FutureBuilder<List<Product>>(
             future: _male,
             builder: (context, snapshot) {

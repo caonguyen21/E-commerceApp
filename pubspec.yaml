@@ -45,6 +45,7 @@ dependencies:
   hive:
   flutter_slidable: ^3.0.0
   animations:
+  flutter_screenutil:
 dev_dependencies:
   flutter_test:
     sdk: flutter

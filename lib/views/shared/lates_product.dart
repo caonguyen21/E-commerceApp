@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/views/shared/stagger_tile.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
@@ -31,13 +32,13 @@ class LatesProduct extends StatelessWidget {
           return StaggeredGridView.countBuilder(
             padding: EdgeInsets.zero,
             crossAxisCount: 2,
-            crossAxisSpacing: 20,
-            mainAxisSpacing: 16,
+            crossAxisSpacing: 20.w,
+            mainAxisSpacing: 16.h,
             itemCount: male!.length,
             scrollDirection: Axis.vertical,
             staggeredTileBuilder: (index) => StaggeredTile.extent(
               (index % 2 == 0) ? 1 : 1,
-              (index % 4 == 1 || index % 4 == 3) ? MediaQuery.of(context).size.height * 0.35 : MediaQuery.of(context).size.height * 0.31,
+              (index % 4 == 1 || index % 4 == 3) ? 285.h : 252.h,
             ),
             itemBuilder: (context, index) {
               final product = snapshot.data![index];

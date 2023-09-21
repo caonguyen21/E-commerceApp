@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NewProduct extends StatelessWidget {
   const NewProduct({super.key, required this.imageUrl});
@@ -9,15 +10,15 @@ class NewProduct extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.h),
       child: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(16)),
           boxShadow: [BoxShadow(color: Colors.white, spreadRadius: 1, blurRadius: 0.8, offset: Offset(0, 1))],
         ),
-        height: MediaQuery.of(context).size.height * 0.12,
-        width: MediaQuery.of(context).size.width * 0.28,
+        height: 100.h,
+        width: 104.w,
         child: Stack(
           children: [
             Center(
