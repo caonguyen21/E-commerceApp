@@ -306,20 +306,17 @@ class _ProductPageState extends State<ProductPage> {
                                             height: 5,
                                           ),
                                           SizedBox(
-                                            width: MediaQuery.of(context).size.width * 0.8,
-                                            child: SingleChildScrollView(
-                                              scrollDirection: Axis.horizontal,
-                                              child: reusableText(text:
-                                                product.title,
-                                                style: appstyle(22, Colors.black, FontWeight.w700),
-                                              ),
+                                            width: MediaQuery.of(context).size.width,
+                                            child: Text(
+                                              product.title,
+                                              style: appstyle(22, Colors.black, FontWeight.w700),
                                             ),
                                           ),
                                           const SizedBox(
                                             height: 10,
                                           ),
                                           SizedBox(
-                                            height: MediaQuery.of(context).size.height * 0.16,
+                                            height: MediaQuery.of(context).size.height * 0.12,
                                             child: GestureDetector(
                                               onTap: () {
                                                 setState(() {

@@ -27,7 +27,7 @@ class HomeWidget extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: 325.h,
+          height: 335.h,
           child: FutureBuilder<List<Product>>(
             future: _male,
             builder: (context, snapshot) {
@@ -65,7 +65,7 @@ class HomeWidget extends StatelessWidget {
         Column(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(12.w, 20.h, 12.w, 20.h),
+              padding: EdgeInsets.fromLTRB(12.w, 20.h, 12.w, 10.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -101,7 +101,7 @@ class HomeWidget extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: 99.h,
+          height: 100.h,
           child: FutureBuilder<List<Product>>(
             future: _male,
             builder: (context, snapshot) {

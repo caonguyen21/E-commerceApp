@@ -22,10 +22,7 @@ class NewProduct extends StatelessWidget {
         child: Stack(
           children: [
             Center(
-              child: RotationTransition(
-                turns: const AlwaysStoppedAnimation(15 / 360),
-                child: CachedNetworkImage(imageUrl: imageUrl),
-              ),
+              child: CachedNetworkImage(imageUrl: imageUrl),
             ),
             Positioned(
               top: 0,

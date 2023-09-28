@@ -46,6 +46,7 @@ dependencies:
   flutter_slidable: ^3.0.0
   animations:
   flutter_screenutil:
+  shimmer:
 dev_dependencies:
   flutter_test:
     sdk: flutter

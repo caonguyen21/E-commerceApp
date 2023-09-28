@@ -43,12 +43,9 @@ class _ProductCartState extends State<ProductCart> {
             children: [
               Stack(
                 children: [
-                  RotationTransition(
-                    turns: const AlwaysStoppedAnimation(15 / 360),
-                    child: Container(
-                      height: 186.h,
-                      decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(widget.image))),
-                    ),
+                  Container(
+                    height: 186.h,
+                    decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(widget.image))),
                   ),
                   Positioned(
                       right: 10.w,
@@ -75,20 +72,23 @@ class _ProductCartState extends State<ProductCart> {
                       })),
                 ],
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.w, top: 6.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    reusableText(
-                      text: widget.name,
-                      style: appstyleWithHt(30, Colors.black, FontWeight.bold, 1.1),
-                    ),
-                    reusableText(
-                      text: widget.category,
-                      style: appstyleWithHt(18, Colors.grey, FontWeight.bold, 1.5),
-                    ),
-                  ],
+              SizedBox(
+                height: 100.h,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 8.w, top: 6.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.name,
+                        style: appstyleWithHt(28, Colors.black, FontWeight.bold, 1.1),
+                      ),
+                      reusableText(
+                        text: widget.category,
+                        style: appstyleWithHt(18, Colors.grey, FontWeight.bold, 1.5),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Padding(
@@ -98,17 +98,15 @@ class _ProductCartState extends State<ProductCart> {
                   children: [
                     reusableText(
                       text: widget.price,
-                      style: appstyle(30, Colors.black, FontWeight.w600),
+                      style: appstyle(28, Colors.black, FontWeight.w600),
                     ),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 20.w,
+                    )
                   ],
                 ),
               ),
-              Padding(
-                  padding: EdgeInsets.only(left: 200.w),
-                  child: Icon(
-                    Icons.chevron_right,
-                    size: 20.w,
-                  ))
             ],
           ),
         ),
