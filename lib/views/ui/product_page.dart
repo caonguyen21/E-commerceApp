@@ -16,10 +16,9 @@ import '../shared/size_guide_popup.dart';
 import 'favoritepage.dart';
 
 class ProductPage extends StatefulWidget {
-  const ProductPage({super.key, required this.id, required this.category});
+  const ProductPage({super.key, required this.product});
 
-  final String id;
-  final String category;
+  final Product product;
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -35,7 +34,6 @@ class _ProductPageState extends State<ProductPage> {
     // TODO: implement initState
     super.initState();
     productNotifier = Provider.of<ProductNotifier>(context, listen: false);
-    productNotifier.getProduct(widget.category, widget.id);
   }
 
   @override
@@ -43,341 +41,325 @@ class _ProductPageState extends State<ProductPage> {
     var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
     var cartProvider = Provider.of<CartProvider>(context);
     favoritesNotifier.getFavorites();
-    return Scaffold(
-      body: FutureBuilder<Product>(
-          future: productNotifier.product,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text("Error ${snapshot.error}");
-            } else {
-              final product = snapshot.data;
-              return Consumer<ProductNotifier>(
-                builder: (context, productNotifier, child) {
-                  return CustomScrollView(
-                    slivers: [
-                      SliverAppBar(
-                        automaticallyImplyLeading: false,
-                        leadingWidth: 0,
-                        title: Padding(
-                          padding: EdgeInsets.only(bottom: 10.h),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
-                                },
-                                child: const Icon(
-                                  Icons.close,
+    return Scaffold(body: Consumer<ProductNotifier>(
+      builder: (context, productNotifier, child) {
+        return CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              automaticallyImplyLeading: false,
+              leadingWidth: 0,
+              title: Padding(
+                padding: EdgeInsets.only(bottom: 10.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
+                      },
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
+                      return GestureDetector(
+                        onTap: () {
+                          if (favoritesNotifier.ids.contains(widget.product.id)) {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
+                          } else {
+                            favoritesNotifier.createFav({
+                              "id": widget.product.id,
+                              "name": widget.product.name,
+                              "category": widget.product.category,
+                              "price": widget.product.price,
+                              "imageUrl": widget.product.imageUrl[0]
+                            });
+                            setState(() {});
+                          }
+                        },
+                        child: favoritesNotifier.ids.contains(widget.product.id)
+                            ? const Icon(
+                                Icons.favorite,
+                                color: Colors.black,
+                              )
+                            : const Icon(
+                                Icons.favorite_border,
+                                color: Colors.black,
+                              ),
+                      );
+                    })
+                  ],
+                ),
+              ),
+              pinned: true,
+              snap: false,
+              floating: true,
+              backgroundColor: Colors.transparent,
+              expandedHeight: MediaQuery.of(context).size.height,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Stack(
+                  children: [
+                    SizedBox(
+                      height: 401.h,
+                      width: 375.w,
+                      child: PageView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: widget.product.imageUrl.length,
+                          controller: pageController,
+                          onPageChanged: (page) {
+                            productNotifier.activePage = page;
+                          },
+                          itemBuilder: (context, int index) {
+                            return Stack(
+                              children: [
+                                Container(
+                                  height: 316.h,
+                                  width: 375.w,
+                                  color: Colors.grey.shade300,
+                                  child: CachedNetworkImage(
+                                    imageUrl: widget.product.imageUrl[index],
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                                Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    left: 0,
+                                    height: MediaQuery.of(context).size.height * 0.3,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: List<Widget>.generate(
+                                        widget.product.imageUrl.length,
+                                        (index) => Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 4.h),
+                                          child: CircleAvatar(
+                                            radius: 5,
+                                            backgroundColor: productNotifier.activePage != index ? Colors.grey : Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            );
+                          }),
+                    ),
+                    Positioned(
+                      bottom: 10,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.645,
+                          width: 375.w,
+                          color: Colors.white,
+                          child: Padding(
+                            padding: EdgeInsets.all(12.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                reusableText(
+                                  text: widget.product.name,
+                                  style: appstyle(40, Colors.black, FontWeight.bold),
+                                ),
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 210.w,
+                                      child: reusableText(
+                                        text: widget.product.name,
+                                        style: appstyle(20, Colors.grey, FontWeight.w500),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 20.w,
+                                    ),
+                                    RatingBar.builder(
+                                      initialRating: 4,
+                                      minRating: 1,
+                                      direction: Axis.horizontal,
+                                      allowHalfRating: true,
+                                      itemCount: 5,
+                                      itemSize: 22,
+                                      itemPadding: const EdgeInsets.symmetric(horizontal: 1),
+                                      itemBuilder: (context, _) => Icon(Icons.star, size: 18.h, color: Colors.black),
+                                      onRatingUpdate: (rating) {
+                                        // You can add your code here to handle the updated rating.
+                                        // print("New Rating: $rating");
+                                        // You might want to update some state variables or perform other actions.
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "\$${widget.product.price}",
+                                      style: appstyle(26, Colors.black, FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        reusableText(
+                                          text: "Select sizes",
+                                          style: appstyle(20, Colors.black, FontWeight.w600),
+                                        ),
+                                        SizedBox(
+                                          width: 20.w,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return ShoeSizeGuidePopup();
+                                              },
+                                            );
+                                          },
+                                          child: reusableText(
+                                            text: "View Size Guide",
+                                            style: appstyle(20, Colors.grey, FontWeight.w600),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5.h,
+                                    ),
+                                    SizedBox(
+                                      height: 40.h,
+                                      child: ListView.builder(
+                                        itemCount: productNotifier.productSizes.length,
+                                        scrollDirection: Axis.horizontal,
+                                        padding: EdgeInsets.zero,
+                                        itemBuilder: (context, index) {
+                                          final sizes = productNotifier.productSizes[index];
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                            child: ChoiceChip(
+                                                disabledColor: Colors.white,
+                                                label: Text(
+                                                  sizes['size'],
+                                                  // Assuming 'size' is a key in the map
+                                                  style: appstyle(
+                                                    16,
+                                                    sizes['isSelected'] ? Colors.white : Colors.black,
+                                                    FontWeight.w500,
+                                                  ),
+                                                ),
+                                                selectedColor: Colors.black,
+                                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                                selected: sizes['isSelected'],
+                                                onSelected: (newState) {
+                                                  final selectedSize = sizes['size'];
+                                                  setState(() {
+                                                    if (productNotifier.sizes.contains(selectedSize)) {
+                                                      productNotifier.sizes.remove(selectedSize);
+                                                    } else {
+                                                      productNotifier.sizes.add(selectedSize);
+                                                    }
+                                                    productNotifier.toggleCheck(index); // Call toggleCheck with the index
+                                                  });
+                                                }),
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                const Divider(
+                                  indent: 10,
+                                  endIndent: 10,
                                   color: Colors.black,
                                 ),
-                              ),
-                              Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    if (favoritesNotifier.ids.contains(widget.id)) {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
-                                    } else {
-                                      favoritesNotifier.createFav({
-                                        "id": product?.id ?? '',
-                                        "name": product?.name ?? '',
-                                        "category": product?.category ?? '',
-                                        "price": product?.price ?? 0.0,
-                                        "imageUrl": product?.imageUrl.isNotEmpty == true ? product?.imageUrl[0] : ''
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Text(
+                                    widget.product.title,
+                                    style: appstyle(22, Colors.black, FontWeight.w700),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.fade,
+                                  )
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.12,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        isDescriptionExpanded = !isDescriptionExpanded;
                                       });
-                                      setState(() {});
-                                    }
-                                  },
-                                  child: favoritesNotifier.ids.contains(widget.id)
-                                      ? const Icon(
-                                          Icons.favorite,
-                                          color: Colors.black,
-                                        )
-                                      : const Icon(
-                                          Icons.favorite_border,
-                                          color: Colors.black,
-                                        ),
-                                );
-                              })
-                            ],
-                          ),
-                        ),
-                        pinned: true,
-                        snap: false,
-                        floating: true,
-                        backgroundColor: Colors.transparent,
-                        expandedHeight: MediaQuery.of(context).size.height,
-                        flexibleSpace: FlexibleSpaceBar(
-                          background: Stack(
-                            children: [
-                              SizedBox(
-                                height: 401.h,
-                                width: 375.w,
-                                child: PageView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: product!.imageUrl.length,
-                                    controller: pageController,
-                                    onPageChanged: (page) {
-                                      productNotifier.activePage = page;
                                     },
-                                    itemBuilder: (context, int index) {
-                                      return Stack(
-                                        children: [
-                                          Container(
-                                            height: 316.h,
-                                            width: 375.w,
-                                            color: Colors.grey.shade300,
-                                            child: CachedNetworkImage(
-                                              imageUrl: product.imageUrl[index],
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                          Positioned(
-                                              bottom: 0,
-                                              right: 0,
-                                              left: 0,
-                                              height: MediaQuery.of(context).size.height * 0.3,
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: List<Widget>.generate(
-                                                  product.imageUrl.length,
-                                                  (index) => Padding(
-                                                    padding: EdgeInsets.symmetric(horizontal: 4.h),
-                                                    child: CircleAvatar(
-                                                      radius: 5,
-                                                      backgroundColor: productNotifier.activePage != index ? Colors.grey : Colors.black,
-                                                    ),
-                                                  ),
-                                                ),
-                                              )),
-                                        ],
-                                      );
-                                    }),
-                              ),
-                              Positioned(
-                                bottom: 10,
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-                                  child: Container(
-                                    height: MediaQuery.of(context).size.height * 0.645,
-                                    width: 375.w,
-                                    color: Colors.white,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(12.h),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          reusableText(
-                                            text: product.name,
-                                            style: appstyle(40, Colors.black, FontWeight.bold),
-                                          ),
-                                          Row(
-                                            children: [
-                                              reusableText(
-                                                text: product.name,
-                                                style: appstyle(20, Colors.grey, FontWeight.w500),
-                                              ),
-                                              SizedBox(
-                                                width: 20.w,
-                                              ),
-                                              RatingBar.builder(
-                                                initialRating: 4,
-                                                minRating: 1,
-                                                direction: Axis.horizontal,
-                                                allowHalfRating: true,
-                                                itemCount: 5,
-                                                itemSize: 22,
-                                                itemPadding: const EdgeInsets.symmetric(horizontal: 1),
-                                                itemBuilder: (context, _) => Icon(Icons.star, size: 18.h, color: Colors.black),
-                                                onRatingUpdate: (rating) {
-                                                  // You can add your code here to handle the updated rating.
-                                                  // print("New Rating: $rating");
-                                                  // You might want to update some state variables or perform other actions.
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 10.h,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "\$${product.price}",
-                                                style: appstyle(26, Colors.black, FontWeight.w600),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 10.h,
-                                          ),
-                                          Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  reusableText(
-                                                    text: "Select sizes",
-                                                    style: appstyle(20, Colors.black, FontWeight.w600),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 20.w,
-                                                  ),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (BuildContext context) {
-                                                          return ShoeSizeGuidePopup();
-                                                        },
-                                                      );
-                                                    },
-                                                    child: reusableText(
-                                                      text: "View Size Guide",
-                                                      style: appstyle(20, Colors.grey, FontWeight.w600),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 5.h,
-                                              ),
-                                              SizedBox(
-                                                height: 40.h,
-                                                child: ListView.builder(
-                                                  itemCount: productNotifier.productSizes.length,
-                                                  scrollDirection: Axis.horizontal,
-                                                  padding: EdgeInsets.zero,
-                                                  itemBuilder: (context, index) {
-                                                    final sizes = productNotifier.productSizes[index];
-                                                    return Padding(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                                      child: ChoiceChip(
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius: BorderRadius.circular(60),
-                                                            side: const BorderSide(
-                                                              color: Colors.black,
-                                                              width: 1,
-                                                              style: BorderStyle.solid,
-                                                            ),
-                                                          ),
-                                                          disabledColor: Colors.white,
-                                                          label: Text(
-                                                            sizes['size'],
-                                                            // Assuming 'size' is a key in the map
-                                                            style: appstyle(
-                                                              18,
-                                                              sizes['isSelected'] ? Colors.white : Colors.black,
-                                                              FontWeight.w500,
-                                                            ),
-                                                          ),
-                                                          selectedColor: Colors.black,
-                                                          padding: const EdgeInsets.symmetric(vertical: 8),
-                                                          selected: sizes['isSelected'],
-                                                          onSelected: (newState) {
-                                                            final selectedSize = sizes['size'];
-                                                            setState(() {
-                                                              if (productNotifier.sizes.contains(selectedSize)) {
-                                                                productNotifier.sizes.remove(selectedSize);
-                                                              } else {
-                                                                productNotifier.sizes.add(selectedSize);
-                                                              }
-                                                              productNotifier.toggleCheck(index); // Call toggleCheck with the index
-                                                            });
-                                                          }),
-                                                    );
-                                                  },
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
-                                          const Divider(
-                                            indent: 10,
-                                            endIndent: 10,
-                                            color: Colors.black,
-                                          ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
-                                          SizedBox(
-                                            width: MediaQuery.of(context).size.width,
-                                            child: Text(
-                                              product.title,
-                                              style: appstyle(22, Colors.black, FontWeight.w700),
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          SizedBox(
-                                            height: MediaQuery.of(context).size.height * 0.12,
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  isDescriptionExpanded = !isDescriptionExpanded;
-                                                });
-                                              },
-                                              child: Text(
-                                                product.description,
-                                                style: appstyle(14, Colors.black, FontWeight.normal),
-                                                textAlign: TextAlign.justify,
-                                                maxLines: isDescriptionExpanded ? null : 4,
-                                              ),
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment: Alignment.bottomCenter,
-                                            child: CheckoutBtn(
-                                              onTap: () {
-                                                // Ensure sizes is not null and contains data
-                                                if (productNotifier.sizes.isNotEmpty) {
-                                                  cartProvider.createCart({
-                                                    "id": product.id,
-                                                    "name": product.name,
-                                                    "category": product.category,
-                                                    "sizes": List.from(productNotifier.sizes), // Create a copy of sizes
-                                                    "imageUrl": product.imageUrl[0],
-                                                    "price": product.price,
-                                                    "qty": 1
-                                                  });
-                                                  // Clear sizes in the productNotifier
-                                                  productNotifier.sizes.clear();
-
-                                                  // Pop the current screen
-                                                  Navigator.pop(context);
-                                                } else {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text('No sizes available for this product.'),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                              label: 'Add to bag',
-                                            ),
-                                          )
-                                        ],
-                                      ),
+                                    child: Text(
+                                      widget.product.description,
+                                      style: appstyle(14, Colors.black, FontWeight.normal),
+                                      textAlign: TextAlign.justify,
+                                      maxLines: isDescriptionExpanded ? null : 4,
                                     ),
                                   ),
                                 ),
-                              )
-                            ],
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: CheckoutBtn(
+                                    onTap: () {
+                                      // Ensure sizes is not null and contains data
+                                      if (productNotifier.sizes.isNotEmpty) {
+                                        cartProvider.createCart({
+                                          "id": widget.product.id,
+                                          "name": widget.product.name,
+                                          "category": widget.product.category,
+                                          "sizes": List.from(productNotifier.sizes), // Create a copy of sizes
+                                          "imageUrl": widget.product.imageUrl[0],
+                                          "price": widget.product.price,
+                                          "qty": 1
+                                        });
+                                        // Clear sizes in the productNotifier
+                                        productNotifier.sizes.clear();
+
+                                        // Pop the current screen
+                                        Navigator.pop(context);
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('No sizes available for this product.'),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    label: 'Add to bag',
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      )
-                    ],
-                  );
-                },
-              );
-            }
-          }),
-    );
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    ));
   }
 }

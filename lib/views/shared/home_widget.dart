@@ -32,7 +32,7 @@ class HomeWidget extends StatelessWidget {
             future: _male,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator.adaptive());
               } else if (snapshot.hasError) {
                 return Text("Error ${snapshot.error}");
               } else {
@@ -46,7 +46,11 @@ class HomeWidget extends StatelessWidget {
                       onTap: () {
                         productNotifier.productSizes = product.sizes;
                         Navigator.push(
-                            context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, category: product.category)));
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProductPage(
+                                      product: product,
+                                    )));
                       },
                       child: ProductCart(
                         price: "\$${product.price}",
@@ -106,7 +110,7 @@ class HomeWidget extends StatelessWidget {
             future: _male,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator.adaptive());
               } else if (snapshot.hasError) {
                 return Text("Error ${snapshot.error}");
               } else {
@@ -122,8 +126,7 @@ class HomeWidget extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           productNotifier.productSizes = product.sizes;
-                          Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => ProductPage(id: product.id, category: product.category)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductPage(product: product)));
                         },
                         child: NewProduct(
                           imageUrl: product.imageUrl[1],

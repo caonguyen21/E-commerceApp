@@ -1,44 +1,47 @@
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 
 import '../models/product.dart';
+import 'config.dart';
 
 class Helper {
+  static var client = http.Client();
+
+  // Male
   Future<List<Product>> getMaleProducts() async {
-    final data = await rootBundle.loadString("assets/json/men_shoes.json");
-    final maleList = productsFromJson(data);
-    return maleList;
+    var url = Uri.http(Config.apiUrl, Config.products);
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      final maleList = productsFromJson(response.body);
+      var male = maleList.where((element) => element.category == "Men's Running");
+      return male.toList();
+    } else {
+      throw Exception("Failed get products list");
+    }
   }
 
+  // Female
   Future<List<Product>> getFemaleProducts() async {
-    final data = await rootBundle.loadString("assets/json/women_shoes.json");
-    final femaleList = productsFromJson(data);
-    return femaleList;
+    var url = Uri.http(Config.apiUrl, Config.products);
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      final femaleList = productsFromJson(response.body);
+      var female = femaleList.where((element) => element.category == "Women's Running");
+      return female.toList();
+    } else {
+      throw Exception("Failed get products list");
+    }
   }
 
+  // Kid
   Future<List<Product>> getKidsProducts() async {
-    final data = await rootBundle.loadString("assets/json/kids_shoes.json");
-    final kidsList = productsFromJson(data);
-    return kidsList;
-  }
-
-  Future<Product> getMaleProductsById(String id) async {
-    final data = await rootBundle.loadString("assets/json/men_shoes.json");
-    final maleList = productsFromJson(data);
-    final product = maleList.firstWhere((product) => product.id == id);
-    return product;
-  }
-
-  Future<Product> getFemaleProductsById(String id) async {
-    final data = await rootBundle.loadString("assets/json/women_shoes.json");
-    final femaleList = productsFromJson(data);
-    final product = femaleList.firstWhere((product) => product.id == id);
-    return product;
-  }
-
-  Future<Product> getKidsProductsById(String id) async {
-    final data = await rootBundle.loadString("assets/json/kids_shoes.json");
-    final kidsList = productsFromJson(data);
-    final product = kidsList.firstWhere((product) => product.id == id);
-    return product;
+    var url = Uri.http(Config.apiUrl, Config.products);
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      final kidList = productsFromJson(response.body);
+      var kid = kidList.where((element) => element.category == "Kids' Running");
+      return kid.toList();
+    } else {
+      throw Exception("Failed get products list");
+    }
   }
 }
