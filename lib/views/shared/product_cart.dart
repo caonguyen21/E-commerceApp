@@ -83,7 +83,7 @@ class _ProductCartState extends State<ProductCart> {
                         widget.name,
                         style: appstyleWithHt(28, Colors.black, FontWeight.bold, 1.1),
                       ),
-                      reusableText(
+                      ReusableText(
                         text: widget.category,
                         style: appstyleWithHt(18, Colors.grey, FontWeight.bold, 1.5),
                       ),
@@ -96,7 +96,7 @@ class _ProductCartState extends State<ProductCart> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    reusableText(
+                    ReusableText(
                       text: widget.price,
                       style: appstyle(28, Colors.black, FontWeight.w600),
                     ),

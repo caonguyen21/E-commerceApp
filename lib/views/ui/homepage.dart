@@ -46,8 +46,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      reusableText(text: "Meadow Store", style: appstyleWithHt(42, Colors.white, FontWeight.bold, 1.5)),
-                      reusableText(text: "Collection", style: appstyleWithHt(42, Colors.white, FontWeight.bold, 1.2)),
+                      ReusableText(text: "Meadow Store", style: appstyleWithHt(42, Colors.white, FontWeight.bold, 1.5)),
+                      ReusableText(text: "Collection", style: appstyleWithHt(42, Colors.white, FontWeight.bold, 1.2)),
                       TabBar(
                           padding: EdgeInsets.zero,
                           indicatorSize: TabBarIndicatorSize.label,

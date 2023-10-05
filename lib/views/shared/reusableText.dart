@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-class reusableText extends StatelessWidget {
-  const reusableText({super.key, required this.text, required this.style});
+class ReusableText extends StatelessWidget {
+  const ReusableText({super.key, required this.text, required this.style});
 
   final String text;
   final TextStyle style;
@@ -10,10 +10,10 @@ class reusableText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      maxLines: 1,
-      overflow: TextOverflow.fade,
-      textAlign: TextAlign.left,
-      softWrap: false,
+      // maxLines: 1,
+      // textAlign: TextAlign.left,
+      // softWrap: false,
+      // overflow: TextOverflow.fade,
       style: style,
     );
   }

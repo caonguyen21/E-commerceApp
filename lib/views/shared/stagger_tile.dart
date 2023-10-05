@@ -56,11 +56,11 @@ class _StaggerTileState extends State<StaggerTile> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              reusableText(text: widget.name, style: appstyleWithHt(20, Colors.black, FontWeight.w700, 1)),
+              ReusableText(text: widget.name, style: appstyleWithHt(20, Colors.black, FontWeight.w700, 1)),
               SizedBox(
                 height: 10.h,
               ),
-              reusableText(text: widget.price, style: appstyleWithHt(20, Colors.black, FontWeight.w500, 1))
+              ReusableText(text: widget.price, style: appstyleWithHt(20, Colors.black, FontWeight.w500, 1))
             ],
           ),
         )

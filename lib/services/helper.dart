@@ -44,4 +44,16 @@ class Helper {
       throw Exception("Failed get products list");
     }
   }
+
+  // Search
+  Future<List<Product>> search(String searchQuery) async {
+    var url = Uri.http(Config.apiUrl, "${Config.search}$searchQuery");
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      final results = productsFromJson(response.body);
+      return results.toList();
+    } else {
+      throw Exception("Failed get products list");
+    }
+  }
 }

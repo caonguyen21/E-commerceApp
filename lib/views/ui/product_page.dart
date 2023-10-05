@@ -158,7 +158,7 @@ class _ProductPageState extends State<ProductPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                reusableText(
+                                ReusableText(
                                   text: widget.product.name,
                                   style: appstyle(40, Colors.black, FontWeight.bold),
                                 ),
@@ -166,7 +166,7 @@ class _ProductPageState extends State<ProductPage> {
                                   children: [
                                     SizedBox(
                                       width: 210.w,
-                                      child: reusableText(
+                                      child: ReusableText(
                                         text: widget.product.name,
                                         style: appstyle(20, Colors.grey, FontWeight.w500),
                                       ),
@@ -210,7 +210,7 @@ class _ProductPageState extends State<ProductPage> {
                                   children: [
                                     Row(
                                       children: [
-                                        reusableText(
+                                        ReusableText(
                                           text: "Select sizes",
                                           style: appstyle(20, Colors.black, FontWeight.w600),
                                         ),
@@ -226,7 +226,7 @@ class _ProductPageState extends State<ProductPage> {
                                               },
                                             );
                                           },
-                                          child: reusableText(
+                                          child: ReusableText(
                                             text: "View Size Guide",
                                             style: appstyle(20, Colors.grey, FontWeight.w600),
                                           ),

@@ -119,7 +119,7 @@ class _CartPageState extends State<CartPage> {
                                                     ),
                                                     Text(
                                                       data['category'],
-                                                      style: appstyle(16, Colors.grey, FontWeight.w600),
+                                                      style: appstyle(14, Colors.grey, FontWeight.w600),
                                                     ),
                                                     const SizedBox(
                                                       height: 5,

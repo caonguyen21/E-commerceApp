@@ -98,7 +98,7 @@ class _FavoritePageState extends State<FavoritePage> {
                                               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                                                 Text(
                                                   "\$${product['price']}",
-                                                  style: appstyle(18, Colors.black, FontWeight.w600),
+                                                  style: appstyle(16, Colors.black, FontWeight.w600),
                                                 ),
                                               ]),
                                             ],

@@ -1,44 +1,157 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_shopping_app/controllers/product_provider.dart';
+import 'package:flutter_shopping_app/services/helper.dart';
+import 'package:flutter_shopping_app/views/ui/product_page.dart';
+import 'package:provider/provider.dart';
 
 import '../shared/appstyle.dart';
+import '../shared/custom_field.dart';
+import '../shared/reusableText.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
 
   @override
-  _SearchPageState createState() => _SearchPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final TextEditingController _searchController = TextEditingController();
+  TextEditingController search = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    var productProvider = Provider.of<ProductNotifier>(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFE2E2E2),
-      appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          decoration: const InputDecoration(
-            hintText: 'Search...',
-            hintStyle: TextStyle(color: Colors.white),
-            border: InputBorder.none,
+        backgroundColor: const Color(0xFFE2E2E2),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 100.h,
+          backgroundColor: Colors.black,
+          elevation: 0,
+          title: CustomField(
+            hintText: 'Search for a product',
+            controller: search,
+            onEditingComplete: () {
+              setState(() {});
+            },
+            prefixIcon: GestureDetector(
+              onTap: () {},
+              child: const Icon(
+                Icons.camera_alt,
+                color: Colors.black,
+              ),
+            ),
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(() {});
+              },
+              child: const Icon(
+                Icons.search,
+                color: Colors.black,
+              ),
+            ),
           ),
-          style: const TextStyle(color: Colors.white),
         ),
-      ),
-      body: Center(
-        child: Text(
-          "Search page",
-          style: appstyle(36, Colors.black, FontWeight.bold),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+        body: search.text.isEmpty
+            ? Center(
+                child: Text(
+                  "No items in search",
+                  style: appstyle(36, Colors.black, FontWeight.bold),
+                ),
+              )
+            : FutureBuilder(
+                future: Helper().search(search.text),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                        child: ReusableText(
+                      text: "Error retrieving the data",
+                      style: appstyle(20, Colors.black, FontWeight.bold),
+                    ));
+                  } else if (snapshot.data!.isEmpty) {
+                    return Center(
+                      child: ReusableText(
+                        text: "Product not found",
+                        style: appstyle(20, Colors.black, FontWeight.bold),
+                      ),
+                    );
+                  } else {
+                    final products = snapshot.data;
+                    return ListView.builder(
+                        itemCount: products!.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return GestureDetector(
+                            onTap: () {
+                              productProvider.productSizes = product.sizes;
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => ProductPage(product: product)));
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(8.h),
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.all(Radius.circular(12)),
+                                child: Container(
+                                  height: 100.h,
+                                  width: 325.w,
+                                  decoration: BoxDecoration(color: Colors.grey.shade100, boxShadow: [
+                                    BoxShadow(color: Colors.grey.shade500, spreadRadius: 5, blurRadius: 0.3, offset: const Offset(0, 1))
+                                  ]),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(12.h),
+                                            child: CachedNetworkImage(
+                                              imageUrl: product.imageUrl[0],
+                                              height: 70.h,
+                                              width: 70,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 12.h, left: 10.w),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                ReusableText(
+                                                  text: product.name,
+                                                  style: appstyle(16, Colors.black, FontWeight.bold),
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                ReusableText(
+                                                  text: product.category,
+                                                  style: appstyle(14, Colors.grey, FontWeight.w600),
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                ReusableText(
+                                                  text: "\$${product.price}",
+                                                  style: appstyle(16, Colors.black, FontWeight.w600),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        });
+                  }
+                }));
   }
 }

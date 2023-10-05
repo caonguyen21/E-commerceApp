@@ -73,7 +73,7 @@ class HomeWidget extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  reusableText(
+                  ReusableText(
                     text: "Latest Shoes",
                     style: appstyle(24, Colors.black, FontWeight.bold),
                   ),
@@ -88,7 +88,7 @@ class HomeWidget extends StatelessWidget {
                     },
                     child: Row(
                       children: [
-                        reusableText(
+                        ReusableText(
                           text: "Show All",
                           style: appstyle(22, Colors.black, FontWeight.w500),
                         ),
