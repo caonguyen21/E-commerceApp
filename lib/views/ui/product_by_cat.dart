@@ -111,9 +111,9 @@ class _ProductByCatState extends State<ProductByCat> with SingleTickerProviderSt
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      LatesProduct(male: productNotifier.male),
-                      LatesProduct(male: productNotifier.female),
-                      LatesProduct(male: productNotifier.kids),
+                      LatestProduct(male: productNotifier.male),
+                      LatestProduct(male: productNotifier.female),
+                      LatestProduct(male: productNotifier.kids),
                     ],
                   ),
                 ),
