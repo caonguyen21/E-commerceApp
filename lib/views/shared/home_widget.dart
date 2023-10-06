@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
+import 'package:flutter_shopping_app/views/shared/shimmer_effect.dart';
 import 'package:flutter_shopping_app/views/ui/product_page.dart';
 import 'package:provider/provider.dart';
 
@@ -9,7 +10,7 @@ import '../../models/product.dart';
 import '../ui/product_by_cat.dart';
 import 'appstyle.dart';
 import 'new_product.dart';
-import 'product_cart.dart';
+import 'product_card.dart';
 
 class HomeWidget extends StatelessWidget {
   const HomeWidget({
@@ -32,7 +33,7 @@ class HomeWidget extends StatelessWidget {
             future: _male,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator.adaptive());
+                return shimmerForProductCard();
               } else if (snapshot.hasError) {
                 return Text("Error ${snapshot.error}");
               } else {
@@ -52,7 +53,7 @@ class HomeWidget extends StatelessWidget {
                                       product: product,
                                     )));
                       },
-                      child: ProductCart(
+                      child: ProductCard(
                         price: "\$${product.price}",
                         category: product.category,
                         name: product.name,
@@ -110,7 +111,7 @@ class HomeWidget extends StatelessWidget {
             future: _male,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator.adaptive());
+                return shimmerForNewProduct();
               } else if (snapshot.hasError) {
                 return Text("Error ${snapshot.error}");
               } else {

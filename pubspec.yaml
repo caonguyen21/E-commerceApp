@@ -48,6 +48,7 @@ dependencies:
   flutter_screenutil:
   shimmer:
   http: ^0.13.6
+  readmore:
 dev_dependencies:
   flutter_test:
     sdk: flutter

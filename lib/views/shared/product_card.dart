@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 
 import '../../controllers/favorites_provider.dart';
 
-class ProductCart extends StatefulWidget {
-  const ProductCart({super.key, required this.price, required this.category, required this.name, required this.image, required this.id});
+class ProductCard extends StatefulWidget {
+  const ProductCard({super.key, required this.price, required this.category, required this.name, required this.image, required this.id});
 
   final String id;
   final String price;
@@ -17,10 +17,10 @@ class ProductCart extends StatefulWidget {
   final String image;
 
   @override
-  State<ProductCart> createState() => _ProductCartState();
+  State<ProductCard> createState() => _ProductCardState();
 }
 
-class _ProductCartState extends State<ProductCart> {
+class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     var favoritesNotifier = Provider.of<FavoritesNotifier>(context, listen: true);

@@ -51,4 +51,8 @@ class ProductNotifier extends ChangeNotifier {
   void getKids() {
     kids = Helper().getKidsProducts();
   }
+
+  Future<void> fetchProducts() async {
+    notifyListeners();
+  }
 }
