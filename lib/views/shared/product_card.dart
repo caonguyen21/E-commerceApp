@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:flutter_shopping_app/views/ui/favoritepage.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/favorites_provider.dart';
+import '../ui/NonUser.dart';
 
 class ProductCard extends StatefulWidget {
   const ProductCard({super.key, required this.price, required this.category, required this.name, required this.image, required this.id});
@@ -51,24 +53,30 @@ class _ProductCardState extends State<ProductCard> {
                       right: 10.w,
                       top: 10.h,
                       child: Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
-                        return GestureDetector(
-                          onTap: () {
-                            if (favoritesNotifier.ids.contains(widget.id)) {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritePage()));
-                            } else {
-                              favoritesNotifier.createFav({
-                                "id": widget.id,
-                                "name": widget.name,
-                                "category": widget.category,
-                                "price": extractedPrice,
-                                "imageUrl": widget.image,
-                              });
-                            }
-                            setState(() {});
-                          },
-                          child:
-                              favoritesNotifier.ids.contains(widget.id) ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
-                        );
+                        return Consumer<LoginNotifier>(builder: (context, authNotifier, child) {
+                          return GestureDetector(
+                            onTap: () {
+                              if (authNotifier.login == true) {
+                                if (favoritesNotifier.ids.contains(widget.id)) {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
+                                } else {
+                                  favoritesNotifier.createFav({
+                                    "id": widget.id,
+                                    "name": widget.name,
+                                    "category": widget.category,
+                                    "price": extractedPrice,
+                                    "imageUrl": widget.image,
+                                  });
+                                }
+                                setState(() {});
+                              } else {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
+                              }
+                            },
+                            child:
+                                favoritesNotifier.ids.contains(widget.id) ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
+                          );
+                        });
                       })),
                 ],
               ),

@@ -4,6 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/cart_provider.dart';
 import 'package:flutter_shopping_app/controllers/favorites_provider.dart';
+import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
@@ -14,6 +15,7 @@ import 'package:readmore/readmore.dart';
 import '../../models/product.dart';
 import '../shared/checkout_btn.dart';
 import '../shared/size_guide_popup.dart';
+import 'NonUser.dart';
 import 'favoritepage.dart';
 
 class ProductPage extends StatefulWidget {
@@ -41,6 +43,7 @@ class _ProductPageState extends State<ProductPage> {
   Widget build(BuildContext context) {
     var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
     var cartProvider = Provider.of<CartProvider>(context);
+    var authNotifier = Provider.of<LoginNotifier>(context);
     favoritesNotifier.getFavorites();
     return Scaffold(
       body: Consumer<ProductNotifier>(
@@ -68,17 +71,21 @@ class _ProductPageState extends State<ProductPage> {
                       Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
                         return GestureDetector(
                           onTap: () {
-                            if (favoritesNotifier.ids.contains(widget.product.id)) {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritePage()));
+                            if (authNotifier.login == true) {
+                              if (favoritesNotifier.ids.contains(widget.product.id)) {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
+                              } else {
+                                favoritesNotifier.createFav({
+                                  "id": widget.product.id,
+                                  "name": widget.product.name,
+                                  "category": widget.product.category,
+                                  "price": widget.product.price,
+                                  "imageUrl": widget.product.imageUrl[0]
+                                });
+                                setState(() {});
+                              }
                             } else {
-                              favoritesNotifier.createFav({
-                                "id": widget.product.id,
-                                "name": widget.product.name,
-                                "category": widget.product.category,
-                                "price": widget.product.price,
-                                "imageUrl": widget.product.imageUrl[0]
-                              });
-                              setState(() {});
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
                             }
                           },
                           child: favoritesNotifier.ids.contains(widget.product.id)
@@ -329,28 +336,32 @@ class _ProductPageState extends State<ProductPage> {
         padding: const EdgeInsets.all(8),
         child: CheckoutBtn(
           onTap: () {
-            // Ensure sizes is not null and contains data
-            if (productNotifier.sizes.isNotEmpty) {
-              cartProvider.createCart({
-                "id": widget.product.id,
-                "name": widget.product.name,
-                "category": widget.product.category,
-                "sizes": List.from(productNotifier.sizes), // Create a copy of sizes
-                "imageUrl": widget.product.imageUrl[0],
-                "price": widget.product.price,
-                "qty": 1
-              });
-              // Clear sizes in the productNotifier
-              productNotifier.sizes.clear();
+            if (authNotifier.login == true) {
+              // Ensure sizes is not null and contains data
+              if (productNotifier.sizes.isNotEmpty) {
+                cartProvider.createCart({
+                  "id": widget.product.id,
+                  "name": widget.product.name,
+                  "category": widget.product.category,
+                  "sizes": List.from(productNotifier.sizes), // Create a copy of sizes
+                  "imageUrl": widget.product.imageUrl[0],
+                  "price": widget.product.price,
+                  "qty": 1
+                });
+                // Clear sizes in the productNotifier
+                productNotifier.sizes.clear();
 
-              // Pop the current screen
-              Navigator.pop(context);
+                // Pop the current screen
+                Navigator.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('No sizes available for this product.'),
+                  ),
+                );
+              }
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('No sizes available for this product.'),
-                ),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
             }
           },
           label: 'Add to bag',
