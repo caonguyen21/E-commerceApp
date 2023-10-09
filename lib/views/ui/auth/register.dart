@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_shopping_app/models/auth/signup_model.dart';
+import 'package:flutter_shopping_app/views/ui/auth/login.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controllers/login_provider.dart';
@@ -15,8 +17,18 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  TextEditingController username = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
+  bool validation = false;
+
+  void formValidation() {
+    if (email.text.isNotEmpty && password.text.isNotEmpty && username.text.isNotEmpty) {
+      validation = true;
+    } else {
+      validation = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +58,15 @@ class _RegisterState extends State<Register> {
             ),
             CustomTextField(
                 keyboard: TextInputType.emailAddress,
-                validator: (email) {
-                  if (email!.isEmpty || !email.contains("@")) {
-                    return "Please provide valid email";
+                validator: (username) {
+                  if (username!.isEmpty) {
+                    return "Please provide username";
                   } else {
                     return null;
                   }
                 },
                 hintText: "Username",
-                controller: email),
+                controller: username),
             SizedBox(
               height: 15.h,
             ),
@@ -98,7 +110,7 @@ class _RegisterState extends State<Register> {
               alignment: Alignment.centerRight,
               child: GestureDetector(
                 onTap: () {
-
+                  Navigator.pop(context);
                 },
                 child: ReusableText(
                   text: 'Login',
@@ -110,7 +122,29 @@ class _RegisterState extends State<Register> {
               height: 40.h,
             ),
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                formValidation();
+                if (validation) {
+                  SignupModel model = SignupModel(username: username.text, email: email.text, password: password.text);
+                  authNotifier.registerUser(model).then((response) {
+                    if (response == true) {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Account already exists!'),
+                        ),
+                      );
+                    }
+                  });
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter complete information!'),
+                    ),
+                  );
+                }
+              },
               child: Container(
                 height: 55.h,
                 width: 300.w,

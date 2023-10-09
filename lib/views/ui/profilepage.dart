@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_shopping_app/services/auth_helper.dart';
 import 'package:flutter_shopping_app/views/shared/tiles_widget.dart';
 import 'package:flutter_shopping_app/views/ui/NonUser.dart';
 import 'package:flutter_shopping_app/views/ui/auth/login.dart';
@@ -80,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 children: [
                   Container(
-                    height: 65.h,
+                    height: 70.h,
                     decoration: const BoxDecoration(
                       color: Color(0xFFE2E2E2),
                     ),
@@ -104,10 +105,35 @@ class _ProfilePageState extends State<ProfilePage> {
                                   const SizedBox(
                                     width: 8,
                                   ),
-                                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                    ReusableText(text: "UserName", style: appstyle(12, Colors.black, FontWeight.normal)),
-                                    ReusableText(text: "email.com", style: appstyle(12, Colors.black, FontWeight.normal)),
-                                  ])
+                                  FutureBuilder(
+                                      future: AuthHelper().getProfile(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                          return const Center(
+                                            child: CircularProgressIndicator.adaptive(),
+                                          );
+                                        } else if (snapshot.hasError) {
+                                          return Center(
+                                            child: ReusableText(
+                                              text: "Error get your data",
+                                              style: appstyle(18, Colors.black, FontWeight.w600),
+                                            ),
+                                          );
+                                        } else {
+                                          final userData = snapshot.data;
+                                          return SizedBox(
+                                            height: 40.h,
+                                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                              ReusableText(
+                                                  text: userData?.username ?? "UserName",
+                                                  style: appstyle(12, Colors.black, FontWeight.normal)),
+                                              ReusableText(
+                                                  text: userData?.email ?? "email.com",
+                                                  style: appstyle(12, Colors.black, FontWeight.normal)),
+                                            ]),
+                                          );
+                                        }
+                                      })
                                 ],
                               ),
                               GestureDetector(
@@ -150,7 +176,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 title: "My Favorites",
                                 leading: Icons.favorite_outline,
                                 OnTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritePage()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
                                 },
                               ),
                               TilesWidget(

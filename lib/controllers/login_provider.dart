@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_shopping_app/models/auth/login_model.dart';
+import 'package:flutter_shopping_app/models/auth/signup_model.dart';
 import 'package:flutter_shopping_app/services/auth_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -66,6 +67,18 @@ class LoginNotifier extends ChangeNotifier {
     pref.remove('token');
     pref.remove('userId');
     pref.setBool('isLogged', false);
+    login = pref.getBool('isLogged') ?? false;
+  }
+
+  Future<bool> registerUser(SignupModel model) async {
+    responseBool = await AuthHelper().signup(model);
+    return responseBool;
+  }
+
+  // Save the information loginIn.
+  // When reload the app it will not be empty data of loginIn before
+  getPrefs() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
     login = pref.getBool('isLogged') ?? false;
   }
 }

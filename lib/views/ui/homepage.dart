@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/views/shared/home_widget.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
@@ -21,6 +22,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    setState(() {
+      var authNotifier = Provider.of<LoginNotifier>(context, listen: false);
+      authNotifier.getPrefs();
+    });
   }
 
   @override

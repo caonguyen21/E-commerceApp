@@ -16,8 +16,8 @@ class AuthHelper {
     Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
     var url = Uri.http(Config.apiUrl, Config.loginUrl);
     var response = await client.post(url, headers: requestHeaders, body: jsonEncode(model.toJson()));
-    print('Login API Response: ${response.statusCode}');
-    print('Login API Response Body: ${response.body}');
+    // print('Login API Response: ${response.statusCode}');
+    // print('Login API Response Body: ${response.body}');
     if (response.statusCode == 200) {
       final SharedPreferences pref = await SharedPreferences.getInstance();
       String userToken = loginResponseModelFromJson(response.body).token;
@@ -27,7 +27,7 @@ class AuthHelper {
       await pref.setBool('isLogged', true);
       return true;
     } else {
-      throw false;
+      return false;
     }
   }
 
@@ -38,7 +38,7 @@ class AuthHelper {
     if (response.statusCode == 201) {
       return true;
     } else {
-      throw false;
+      return false;
     }
   }
 
@@ -47,7 +47,7 @@ class AuthHelper {
     String? userToken = pref.getString('token');
     Map<String, String> requestHeaders = {'Content-Type': 'application/json', 'token': 'Bearer $userToken'};
     var url = Uri.http(Config.apiUrl, Config.getUserUrl);
-    var response = await client.post(url, headers: requestHeaders);
+    var response = await client.get(url, headers: requestHeaders);
     if (response.statusCode == 200) {
       var profile = profileResFromJson(response.body);
       return profile;

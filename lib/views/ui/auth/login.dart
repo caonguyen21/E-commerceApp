@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/login_provider.dart';
@@ -112,21 +111,25 @@ class _LoginPageState extends State<LoginPage> {
               onTap: () {
                 formValidation();
                 if (validation) {
-                 // print('Login button tapped with email: ${email.text} and password: ${password.text}');
+                  // print('Login button tapped with email: ${email.text} and password: ${password.text}');
                   LoginModel model = LoginModel(email: email.text, password: password.text);
                   authNotifier.userLogin(model).then((response) {
                     if (response == true) {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
                     } else {
-                      if (kDebugMode) {
-                        print("Failed to login");
-                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to login!, Please check the information again.'),
+                        ),
+                      );
                     }
                   });
                 } else {
-                  if (kDebugMode) {
-                    print("form not validated");
-                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter complete information!'),
+                    ),
+                  );
                 }
               },
               child: Container(
