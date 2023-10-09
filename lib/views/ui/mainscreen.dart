@@ -9,16 +9,16 @@ import 'package:flutter_shopping_app/views/ui/searchpage.dart';
 import 'package:provider/provider.dart';
 
 import '../shared/bottom_nav.dart';
+import 'nonuser.dart';
 
 class MainScreen extends StatelessWidget {
   MainScreen({super.key});
 
-  List<Widget> pageList = const [
-    HomePage(),
-    SearchPage(),
+  List<Widget> pageList =  [
+    const HomePage(),
+    const SearchPage(),
     FavoritePage(),
-    CartPage(),
-    ProfilePage(),
+    const ProfilePage()
   ];
 
   @override
@@ -26,7 +26,7 @@ class MainScreen extends StatelessWidget {
     return Consumer<MainScreenNotifier>(
       builder: (context, mainScreenNotifier, child) {
         return Scaffold(
-          backgroundColor: Color(0xFFE2E2E2),
+          backgroundColor: const Color(0xFFE2E2E2),
           body: pageList[mainScreenNotifier.pageIndex],
           bottomNavigationBar: const BottomNavbar(),
         );

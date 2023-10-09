@@ -34,7 +34,9 @@ class _CartPageState extends State<CartPage> {
                     height: 40,
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
                     child: const Icon(
                       Icons.close,
                       color: Colors.black,

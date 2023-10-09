@@ -54,14 +54,6 @@ class BottomNavbar extends StatelessWidget {
                       mainScreenNotifier.pageIndex = 3;
                     },
                     icon: mainScreenNotifier.pageIndex == 3
-                        ? Ionicons.cart
-                        : Ionicons.cart_outline,
-                  ),
-                  BottomNavWidget(
-                    onTap: () {
-                      mainScreenNotifier.pageIndex = 4;
-                    },
-                    icon: mainScreenNotifier.pageIndex == 4
                         ? Ionicons.person
                         : Ionicons.person_outline,
                   ),

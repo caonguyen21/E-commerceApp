@@ -54,7 +54,7 @@ class _ProductCardState extends State<ProductCard> {
                         return GestureDetector(
                           onTap: () {
                             if (favoritesNotifier.ids.contains(widget.id)) {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritePage()));
                             } else {
                               favoritesNotifier.createFav({
                                 "id": widget.id,

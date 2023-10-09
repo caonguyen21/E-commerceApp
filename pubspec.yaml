@@ -47,8 +47,10 @@ dependencies:
   animations:
   flutter_screenutil:
   shimmer:
-  http: ^0.13.6
+  http:
   readmore:
+  flutter_svg: ^2.0.5
+  shared_preferences:
 dev_dependencies:
   flutter_test:
     sdk: flutter
