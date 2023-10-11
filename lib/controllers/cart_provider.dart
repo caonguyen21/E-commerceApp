@@ -7,6 +7,17 @@ class CartProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> get cart => _cart;
 
+  int countUniqueIds() {
+    Set<String> uniqueIds = Set<String>();
+
+    for (var item in _cart) {
+      String id = item['id'];
+      uniqueIds.add(id);
+    }
+
+    return uniqueIds.length;
+  }
+
   void loadCartData() {
     final cartData = _cartBox.keys.map((key) {
       final item = _cartBox.get(key);

@@ -15,7 +15,7 @@ class LatestProduct extends StatelessWidget {
     required this.male,
   }) : super(key: key);
 
-  final Future<List<Product>> male;
+  final Future<List<Products>> male;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class LatestProduct extends StatelessWidget {
         productProvider.fetchProducts();
         await Future.delayed(const Duration(seconds: 2)); // Simulating a delay
       },
-      child: FutureBuilder<List<Product>>(
+      child: FutureBuilder<List<Products>>(
         future: male,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -41,7 +41,7 @@ class LatestProduct extends StatelessWidget {
     );
   }
 
-  Widget _buildProductTile(Product product, BuildContext context) {
+  Widget _buildProductTile(Products product, BuildContext context) {
     if (product.imageUrl.length >= 2) {
       return GestureDetector(
         onTap: () {
@@ -62,7 +62,7 @@ class LatestProduct extends StatelessWidget {
     }
   }
 
-  Widget _buildProductGrid(List<Product>? maleProducts) {
+  Widget _buildProductGrid(List<Products>? maleProducts) {
     return StaggeredGridView.countBuilder(
       padding: EdgeInsets.zero,
       crossAxisCount: 2,

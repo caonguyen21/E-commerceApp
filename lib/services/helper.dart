@@ -7,7 +7,7 @@ class Helper {
   static var client = http.Client();
 
   // Male
-  Future<List<Product>> getMaleProducts() async {
+  Future<List<Products>> getMaleProducts() async {
     var url = Uri.http(Config.apiUrl, Config.products);
     var response = await client.get(url);
     if (response.statusCode == 200) {
@@ -20,7 +20,7 @@ class Helper {
   }
 
   // Female
-  Future<List<Product>> getFemaleProducts() async {
+  Future<List<Products>> getFemaleProducts() async {
     var url = Uri.http(Config.apiUrl, Config.products);
     var response = await client.get(url);
     if (response.statusCode == 200) {
@@ -33,7 +33,7 @@ class Helper {
   }
 
   // Kid
-  Future<List<Product>> getKidsProducts() async {
+  Future<List<Products>> getKidsProducts() async {
     var url = Uri.http(Config.apiUrl, Config.products);
     var response = await client.get(url);
     if (response.statusCode == 200) {
@@ -46,7 +46,7 @@ class Helper {
   }
 
   // Search
-  Future<List<Product>> search(String searchQuery) async {
+  Future<List<Products>> search(String searchQuery) async {
     var url = Uri.http(Config.apiUrl, "${Config.search}$searchQuery");
     var response = await client.get(url);
     if (response.statusCode == 200) {

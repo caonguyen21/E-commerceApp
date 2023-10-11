@@ -13,6 +13,7 @@ class CustomField extends StatefulWidget {
     this.obscureText,
     this.onEditingComplete,
     this.prefixIcon,
+    required this.onRefresh,
   }) : super(key: key);
 
   final TextEditingController controller;
@@ -23,6 +24,7 @@ class CustomField extends StatefulWidget {
   final Widget? prefixIcon;
   final void Function()? onEditingComplete;
   final bool? obscureText;
+  final VoidCallback onRefresh;
 
   @override
   State<CustomField> createState() => _CustomFieldState();
@@ -52,47 +54,49 @@ class _CustomFieldState extends State<CustomField> {
         obscureText: widget.obscureText ?? false,
         onEditingComplete: widget.onEditingComplete,
         decoration: InputDecoration(
-            hintText: widget.hintText,
-            suffixIcon: widget.suffixIcon,
-            prefixIcon: GestureDetector(
-              onTap: () {
-                setState(() {
-                  widget.controller.clear();
-                  isTextEmpty = true;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10.0),
-                child: Icon(
-                  isTextEmpty ? Icons.camera_alt : Icons.clear,
-                  color: Colors.black,
-                ),
+          hintText: widget.hintText,
+          suffixIcon: widget.suffixIcon,
+          prefixIcon: GestureDetector(
+            onTap: () {
+              setState(() {
+                widget.controller.clear();
+                isTextEmpty = true;
+              });
+              widget.onRefresh();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10.0),
+              child: Icon(
+                isTextEmpty ? Icons.camera_alt : Icons.clear,
+                color: Colors.black,
               ),
             ),
-            suffixIconColor: Colors.black,
-            hintStyle: appstyle(16, Colors.grey, FontWeight.w500),
-            contentPadding: EdgeInsets.zero,
-            errorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.zero,
-              borderSide: BorderSide(color: Colors.transparent, width: 0.5),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.zero,
-              borderSide: BorderSide(color: Colors.transparent, width: 0),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.zero,
-              borderSide: BorderSide(color: Colors.transparent, width: 0.5),
-            ),
-            disabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.zero,
-              borderSide: BorderSide(color: Colors.transparent, width: 0),
-            ),
-            enabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.zero,
-              borderSide: BorderSide(color: Colors.transparent, width: 0),
-            ),
-            border: InputBorder.none),
+          ),
+          suffixIconColor: Colors.black,
+          hintStyle: appstyle(16, Colors.grey, FontWeight.w500),
+          contentPadding: EdgeInsets.zero,
+          errorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.zero,
+            borderSide: BorderSide(color: Colors.transparent, width: 0.5),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.zero,
+            borderSide: BorderSide(color: Colors.transparent, width: 0),
+          ),
+          focusedErrorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.zero,
+            borderSide: BorderSide(color: Colors.transparent, width: 0.5),
+          ),
+          disabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.zero,
+            borderSide: BorderSide(color: Colors.transparent, width: 0),
+          ),
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.zero,
+            borderSide: BorderSide(color: Colors.transparent, width: 0),
+          ),
+          border: InputBorder.none,
+        ),
         controller: widget.controller,
         cursorHeight: 20,
         cursorRadius: const Radius.circular(30),

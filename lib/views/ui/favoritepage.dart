@@ -7,17 +7,15 @@ import 'package:provider/provider.dart';
 
 import '../../controllers/favorites_provider.dart';
 import '../shared/appstyle.dart';
-import 'mainscreen.dart';
 
 class FavoritePage extends StatelessWidget {
-  const FavoritePage({super.key});
+  const FavoritePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
     var authNotifier = Provider.of<LoginNotifier>(context);
     favoritesNotifier.getAllFav();
-
     return authNotifier.login == false
         ? const NonUser()
         : Scaffold(
@@ -41,28 +39,33 @@ class FavoritePage extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 115.h),
-                    child: favoritesNotifier.fav.isEmpty
-                        ? Center(
-                            child: Text(
-                              'No items in favorites.',
-                              style: appstyle(28, Colors.black, FontWeight.bold),
-                            ),
-                          )
-                        : ListView.builder(
-                            itemCount: favoritesNotifier.fav.length,
-                            padding: EdgeInsets.zero,
-                            itemBuilder: (BuildContext context, int index) {
-                              final product = favoritesNotifier.fav[index];
-                              return ProductItem(
+                      padding: EdgeInsets.only(top: 115.h),
+                      child: favoritesNotifier.fav.isEmpty
+                          ? Center(
+                              child: Text(
+                                'No items in favorites.',
+                                style: appstyle(28, Colors.black, FontWeight.bold),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: favoritesNotifier.fav.length,
+                              padding: EdgeInsets.zero,
+                              itemBuilder: (BuildContext context, int index) {
+                                final product = favoritesNotifier.fav[index];
+                                return ProductItem(
                                   product: product,
                                   onDelete: () {
                                     favoritesNotifier.deleteFav(product['key']);
                                     favoritesNotifier.ids.removeWhere((element) => element == product['id']);
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
-                                  });
-                            }),
-                  )
+                                  },
+                                  onFavoriteDeleted: () {
+                                    favoritesNotifier.getAllFav();
+                                    // Rebuild FavoritePage
+                                    Provider.of<FavoritesNotifier>(context, listen: false).notifyListeners();
+                                  },
+                                );
+                              },
+                            ))
                 ],
               ),
             ),
@@ -73,12 +76,14 @@ class FavoritePage extends StatelessWidget {
 class ProductItem extends StatelessWidget {
   final Map<String, dynamic> product;
   final VoidCallback onDelete;
+  final VoidCallback onFavoriteDeleted;
 
   const ProductItem({
-    super.key,
+    Key? key,
     required this.product,
     required this.onDelete,
-  });
+    required this.onFavoriteDeleted,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +146,10 @@ class ProductItem extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: GestureDetector(
-                  onTap: onDelete,
+                  onTap: () {
+                    onDelete();
+                    onFavoriteDeleted();
+                  },
                   child: const Icon(Icons.heart_broken),
                 ),
               ),

@@ -36,9 +36,9 @@ class ProductNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  late Future<List<Product>> male;
-  late Future<List<Product>> female;
-  late Future<List<Product>> kids;
+  late Future<List<Products>> male;
+  late Future<List<Products>> female;
+  late Future<List<Products>> kids;
 
   void getMale() {
     male = Helper().getMaleProducts();

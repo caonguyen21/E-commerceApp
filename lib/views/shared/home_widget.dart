@@ -15,11 +15,11 @@ import 'product_card.dart';
 class HomeWidget extends StatelessWidget {
   const HomeWidget({
     super.key,
-    required Future<List<Product>> male,
+    required Future<List<Products>> male,
     required this.tabIndex,
   }) : _male = male;
 
-  final Future<List<Product>> _male;
+  final Future<List<Products>> _male;
   final int tabIndex;
 
   @override
@@ -29,7 +29,7 @@ class HomeWidget extends StatelessWidget {
       children: [
         SizedBox(
           height: 335.h,
-          child: FutureBuilder<List<Product>>(
+          child: FutureBuilder<List<Products>>(
             future: _male,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -107,7 +107,7 @@ class HomeWidget extends StatelessWidget {
         ),
         SizedBox(
           height: 100.h,
-          child: FutureBuilder<List<Product>>(
+          child: FutureBuilder<List<Products>>(
             future: _male,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {

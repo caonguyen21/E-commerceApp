@@ -2,16 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_shopping_app/controllers/cart_provider.dart';
 import 'package:flutter_shopping_app/controllers/favorites_provider.dart';
 import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
+import 'package:flutter_shopping_app/models/cart/add_to_cart.dart';
+import 'package:flutter_shopping_app/services/cart_helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
-import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
+import 'package:flutter_shopping_app/views/ui/cartpage.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 
+import '../../models/cart/get_products.dart';
 import '../../models/product.dart';
 import '../shared/checkout_btn.dart';
 import '../shared/size_guide_popup.dart';
@@ -21,7 +23,7 @@ import 'favoritepage.dart';
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key, required this.product});
 
-  final Product product;
+  final Products product;
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -31,18 +33,19 @@ class _ProductPageState extends State<ProductPage> {
   final PageController pageController = PageController();
   late ProductNotifier productNotifier;
   bool isDescriptionExpanded = false;
+  late Future<List<Product>> _cartList;
 
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+    _cartList = CartHelper().getCart();
     productNotifier = Provider.of<ProductNotifier>(context, listen: false);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
-    var cartProvider = Provider.of<CartProvider>(context);
     var authNotifier = Provider.of<LoginNotifier>(context);
     favoritesNotifier.getFavorites();
     return Scaffold(
@@ -61,44 +64,84 @@ class _ProductPageState extends State<ProductPage> {
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
                         },
                         child: const Icon(
                           Icons.close,
                           color: Colors.black,
                         ),
                       ),
-                      Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
-                        return GestureDetector(
-                          onTap: () {
-                            if (authNotifier.login == true) {
-                              if (favoritesNotifier.ids.contains(widget.product.id)) {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
-                              } else {
-                                favoritesNotifier.createFav({
-                                  "id": widget.product.id,
-                                  "name": widget.product.name,
-                                  "category": widget.product.category,
-                                  "price": widget.product.price,
-                                  "imageUrl": widget.product.imageUrl[0]
-                                });
-                                setState(() {});
-                              }
-                            } else {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
-                            }
-                          },
-                          child: favoritesNotifier.ids.contains(widget.product.id)
-                              ? const Icon(
-                                  Icons.favorite,
-                                  color: Colors.black,
-                                )
-                              : const Icon(
-                                  Icons.favorite_border,
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage()));
+                            },
+                            child: Stack(
+                              children: [
+                                const Icon(
+                                  Icons.shopping_cart,
                                   color: Colors.black,
                                 ),
-                        );
-                      })
+                                Positioned(
+                                  right: -2,
+                                  top: -5,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(3.0),
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.red,
+                                    ),
+                                    child: FutureBuilder(
+                                      future: _cartList,
+                                      builder: (context, snapshot) {
+                                        final itemCount = snapshot.connectionState == ConnectionState.done ? snapshot.data?.length : 0;
+                                        return Text(
+                                          itemCount?.toString() ?? '0',
+                                          style: appstyle(12, Colors.white, FontWeight.bold),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10.w,
+                          ),
+                          Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
+                            return GestureDetector(
+                              onTap: () {
+                                if (authNotifier.login == true) {
+                                  if (favoritesNotifier.ids.contains(widget.product.id)) {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
+                                  } else {
+                                    favoritesNotifier.createFav({
+                                      "id": widget.product.id,
+                                      "name": widget.product.name,
+                                      "category": widget.product.category,
+                                      "price": widget.product.price,
+                                      "imageUrl": widget.product.imageUrl[0]
+                                    });
+                                    setState(() {});
+                                  }
+                                } else {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
+                                }
+                              },
+                              child: favoritesNotifier.ids.contains(widget.product.id)
+                                  ? const Icon(
+                                      Icons.favorite,
+                                      color: Colors.black,
+                                    )
+                                  : const Icon(
+                                      Icons.favorite_border,
+                                      color: Colors.black,
+                                    ),
+                            );
+                          }),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -337,23 +380,21 @@ class _ProductPageState extends State<ProductPage> {
         child: CheckoutBtn(
           onTap: () {
             if (authNotifier.login == true) {
-              // Ensure sizes is not null and contains data
+              // Check if product sizes are available
               if (productNotifier.sizes.isNotEmpty) {
-                cartProvider.createCart({
-                  "id": widget.product.id,
-                  "name": widget.product.name,
-                  "category": widget.product.category,
-                  "sizes": List.from(productNotifier.sizes), // Create a copy of sizes
-                  "imageUrl": widget.product.imageUrl[0],
-                  "price": widget.product.price,
-                  "qty": 1
+                // print(productNotifier.sizes);
+                // Add the product to the cart
+                AddToCart model = AddToCart(cartItem: widget.product.id, quantity: 1);
+                CartHelper().addToCart(model, 'increment').then((success) {
+                  if (success) {
+                    setState(() {
+                      _cartList = CartHelper().getCart();
+                    });
+                  }
                 });
-                // Clear sizes in the productNotifier
-                productNotifier.sizes.clear();
-
-                // Pop the current screen
-                Navigator.pop(context);
+                _showSuccessDialog(context);
               } else {
+                // Show a snackbar indicating no sizes available
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('No sizes available for this product.'),
@@ -361,6 +402,7 @@ class _ProductPageState extends State<ProductPage> {
                 );
               }
             } else {
+              // Navigate to a non-user page
               Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
             }
           },
@@ -369,4 +411,43 @@ class _ProductPageState extends State<ProductPage> {
       ),
     );
   }
+}
+
+void _showSuccessDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 5,
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 48.0,
+              ),
+              SizedBox(height: 16.0),
+              Text(
+                'Success! Added to cart',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+  Future.delayed(const Duration(seconds: 1), () {
+    Navigator.of(context).pop();
+  });
 }
