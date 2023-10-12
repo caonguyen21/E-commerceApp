@@ -105,9 +105,9 @@ class _ProductByCatState extends State<ProductByCat> with SingleTickerProviderSt
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.185, left: 16, right: 12),
+                padding: EdgeInsets.only(top: 150.h, left: 16.w, right: 12.w),
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(16)),
+                  borderRadius: BorderRadius.all(const Radius.circular(16).w),
                   child: TabBarView(
                     controller: _tabController,
                     children: [

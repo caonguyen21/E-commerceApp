@@ -27,6 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return authNotifier.login == false
         ? const NonUser()
         : Scaffold(
+            backgroundColor: const Color(0xFFE2E2E2),
             appBar: AppBar(
               backgroundColor: const Color(0xFFE2E2E2),
               elevation: 0,
@@ -160,7 +161,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 10.h,
                         ),
                         Container(
-                          height: 170.h,
+                          height: 175.h,
                           color: Colors.grey.shade200,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,7 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 10.h,
                         ),
                         Container(
-                          height: 115.h,
+                          height: 120.h,
                           color: Colors.grey.shade200,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +208,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 10.h,
                         ),
                         Container(
-                          height: 170.h,
+                          height: 175.h,
                           color: Colors.grey.shade200,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

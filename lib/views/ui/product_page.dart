@@ -32,7 +32,6 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   final PageController pageController = PageController();
   late ProductNotifier productNotifier;
-  bool isDescriptionExpanded = false;
   late Future<List<Product>> _cartList;
 
   @override
@@ -97,7 +96,7 @@ class _ProductPageState extends State<ProductPage> {
                                         final itemCount = snapshot.connectionState == ConnectionState.done ? snapshot.data?.length : 0;
                                         return Text(
                                           itemCount?.toString() ?? '0',
-                                          style: appstyle(12, Colors.white, FontWeight.bold),
+                                          style: appstyle(12.sp, Colors.white, FontWeight.bold),
                                         );
                                       },
                                     ),
@@ -179,7 +178,7 @@ class _ProductPageState extends State<ProductPage> {
                                       bottom: 0,
                                       right: 0,
                                       left: 0,
-                                      height: MediaQuery.of(context).size.height * 0.3,
+                                      height: 243.6.h,
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: List<Widget>.generate(
@@ -202,7 +201,7 @@ class _ProductPageState extends State<ProductPage> {
                         child: ClipRRect(
                           borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
                           child: Container(
-                            height: MediaQuery.of(context).size.height * 0.645,
+                            height: 523.74.h,
                             width: 375.w,
                             color: Colors.white,
                             child: Padding(
@@ -212,7 +211,7 @@ class _ProductPageState extends State<ProductPage> {
                                 children: [
                                   ReusableText(
                                     text: widget.product.name,
-                                    style: appstyle(40, Colors.black, FontWeight.bold),
+                                    style: appstyle(40.sp, Colors.black, FontWeight.bold),
                                   ),
                                   Row(
                                     children: [
@@ -220,7 +219,7 @@ class _ProductPageState extends State<ProductPage> {
                                         width: 210.w,
                                         child: ReusableText(
                                           text: widget.product.name,
-                                          style: appstyle(20, Colors.grey, FontWeight.w500),
+                                          style: appstyle(20.sp, Colors.grey, FontWeight.w500),
                                         ),
                                       ),
                                       SizedBox(
@@ -251,7 +250,7 @@ class _ProductPageState extends State<ProductPage> {
                                     children: [
                                       Text(
                                         "\$${widget.product.price}",
-                                        style: appstyle(26, Colors.black, FontWeight.w600),
+                                        style: appstyle(26.sp, Colors.black, FontWeight.w600),
                                       ),
                                     ],
                                   ),
@@ -264,7 +263,7 @@ class _ProductPageState extends State<ProductPage> {
                                         children: [
                                           ReusableText(
                                             text: "Select sizes",
-                                            style: appstyle(20, Colors.black, FontWeight.w600),
+                                            style: appstyle(20.sp, Colors.black, FontWeight.w600),
                                           ),
                                           SizedBox(
                                             width: 20.w,
@@ -280,7 +279,7 @@ class _ProductPageState extends State<ProductPage> {
                                             },
                                             child: ReusableText(
                                               text: "View Size Guide",
-                                              style: appstyle(20, Colors.grey, FontWeight.w600),
+                                              style: appstyle(20.sp, Colors.grey, FontWeight.w600),
                                             ),
                                           )
                                         ],
@@ -297,20 +296,20 @@ class _ProductPageState extends State<ProductPage> {
                                           itemBuilder: (context, index) {
                                             final sizes = productNotifier.productSizes[index];
                                             return Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0).w,
                                               child: ChoiceChip(
                                                   disabledColor: Colors.white,
                                                   label: Text(
                                                     sizes['size'],
                                                     // Assuming 'size' is a key in the map
                                                     style: appstyle(
-                                                      16,
+                                                      16.sp,
                                                       sizes['isSelected'] ? Colors.white : Colors.black,
                                                       FontWeight.w500,
                                                     ),
                                                   ),
                                                   selectedColor: Colors.black,
-                                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                                  padding: const EdgeInsets.symmetric(vertical: 8).w,
                                                   selected: sizes['isSelected'],
                                                   onSelected: (newState) {
                                                     final selectedSize = sizes['size'];
@@ -329,25 +328,25 @@ class _ProductPageState extends State<ProductPage> {
                                       )
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 5,
+                                  SizedBox(
+                                    height: 5.h,
                                   ),
                                   const Divider(
                                     indent: 10,
                                     endIndent: 10,
                                     color: Colors.black,
                                   ),
-                                  const SizedBox(
-                                    height: 5,
+                                  SizedBox(
+                                    height: 5.h,
                                   ),
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
                                       child: Text(
                                         widget.product.title,
-                                        style: appstyle(22, Colors.black, FontWeight.w700),
+                                        style: appstyle(22.sp, Colors.black, FontWeight.w700),
                                       )),
-                                  const SizedBox(
-                                    height: 10,
+                                  SizedBox(
+                                    height: 10.h,
                                   ),
                                   SingleChildScrollView(
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[

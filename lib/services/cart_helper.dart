@@ -28,11 +28,24 @@ class CartHelper {
       // Send only the cartItem ID in the request payload
       Map<String, dynamic> requestBody = {"cartItem": cartItemId, "action": action};
 
-      final response = await http.post(
+      var response = await http.post(
         url,
         headers: requestHeaders,
         body: jsonEncode(requestBody),
       );
+
+      // Check for 307 status code
+      if (response.statusCode == 307) {
+        // If the server returns a 307 status code, get the new location and retry the request
+        String redirectUrl = response.headers['location'] ?? '';
+
+        // Retry the request with the new location
+        response = await http.post(
+          Uri.parse(redirectUrl),
+          headers: requestHeaders,
+          body: jsonEncode(requestBody),
+        );
+      }
 
       if (response.statusCode == 200) {
         return true;
@@ -67,16 +80,48 @@ class CartHelper {
   }
 
   Future<bool> deleteItem(String id) async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    String? userToken = pref.getString('token');
-    Map<String, String> requestHeaders = {'Content-Type': 'application/json', 'token': 'Bearer $userToken'};
+    try {
+      final SharedPreferences pref = await SharedPreferences.getInstance();
+      String? userToken = pref.getString('token');
 
-    var url = Uri.http(Config.apiUrl, "${Config.addCartUrl}/$id");
+      if (userToken == null) {
+        // Handle the case where userToken is null (user not authenticated)
+        return false;
+      }
 
-    var response = await client.delete(url, headers: requestHeaders);
-    if (response.statusCode == 200) {
-      return true;
-    } else {
+      Map<String, String> requestHeaders = {
+        'Content-Type': 'application/json',
+        'token': 'Bearer $userToken',
+      };
+
+      var url = Uri.http(Config.apiUrl, "${Config.addCartUrl}/$id");
+
+      final response = await http.delete(url, headers: requestHeaders);
+
+      if (response.statusCode == 307) {
+        // If the server returns a 307 status code, get the new location and retry the request
+        String redirectUrl = response.headers['location'] ?? '';
+
+        // Retry the request with the new location
+        final redirectedResponse = await http.delete(
+          Uri.parse(redirectUrl),
+          headers: requestHeaders,
+        );
+
+        if (redirectedResponse.statusCode == 200) {
+          return true;
+        } else {
+          // Print the response status code and body for debugging
+          return false;
+        }
+      } else if (response.statusCode == 200) {
+        return true;
+      } else {
+        // Print the response status code and body for debugging
+        return false;
+      }
+    } catch (error) {
+      // Handle errors here
       return false;
     }
   }

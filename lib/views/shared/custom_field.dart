@@ -67,7 +67,7 @@ class _CustomFieldState extends State<CustomField> {
             child: Container(
               padding: const EdgeInsets.all(10.0),
               child: Icon(
-                isTextEmpty ? Icons.camera_alt : Icons.clear,
+                isTextEmpty ? Icons.camera_alt_outlined : Icons.clear,
                 color: Colors.black,
               ),
             ),

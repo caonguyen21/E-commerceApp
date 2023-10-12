@@ -13,31 +13,58 @@ class AuthHelper {
   static var client = http.Client();
 
   Future<bool> login(LoginModel model) async {
-    Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
-    var url = Uri.http(Config.apiUrl, Config.loginUrl);
-    var response = await client.post(url, headers: requestHeaders, body: jsonEncode(model.toJson()));
-    // print('Login API Response: ${response.statusCode}');
-    // print('Login API Response Body: ${response.body}');
-    if (response.statusCode == 200) {
-      final SharedPreferences pref = await SharedPreferences.getInstance();
-      String userToken = loginResponseModelFromJson(response.body).token;
-      String userId = loginResponseModelFromJson(response.body).id;
-      await pref.setString('token', userToken);
-      await pref.setString('userId', userId);
-      await pref.setBool('isLogged', true);
-      return true;
-    } else {
+    try {
+      Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
+      var url = Uri.http(Config.apiUrl, Config.loginUrl);
+
+      var response = await client.post(url, headers: requestHeaders, body: jsonEncode(model.toJson()));
+
+      if (response.statusCode == 200 || response.statusCode == 307) {
+        // If it's a redirect, get the new URL from the 'Location' header
+        if (response.statusCode == 307) {
+          String? redirectUrl = response.headers['location'];
+          url = Uri.parse(redirectUrl!);
+          response = await client.post(url, headers: requestHeaders, body: jsonEncode(model.toJson()));
+        }
+
+        final SharedPreferences pref = await SharedPreferences.getInstance();
+        var loginResponse = loginResponseModelFromJson(response.body);
+        await pref.setString('token', loginResponse.token);
+        await pref.setString('userId', loginResponse.id);
+        await pref.setBool('isLogged', true);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
       return false;
     }
   }
 
   Future<bool> signup(SignupModel model) async {
-    Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
-    var url = Uri.http(Config.apiUrl, Config.signupUrl);
-    var response = await client.post(url, headers: requestHeaders, body: jsonEncode(model.toJson()));
-    if (response.statusCode == 201) {
-      return true;
-    } else {
+    try {
+      Map<String, String> requestHeaders = {'Content-Type': 'application/json'};
+      var url = Uri.http(Config.apiUrl, Config.signupUrl);
+
+      var response = await client.post(url, headers: requestHeaders, body: jsonEncode(model.toJson()));
+
+      if (response.statusCode == 201 || response.statusCode == 307) {
+        // If it's a redirect, get the new URL from the 'Location' header
+        if (response.statusCode == 307) {
+          String? redirectUrl = response.headers['location'];
+          if (redirectUrl != null) {
+            url = Uri.parse(redirectUrl);
+            response = await client.post(url, headers: requestHeaders, body: jsonEncode(model.toJson()));
+          } else {
+            return false;
+          }
+        }
+
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
       return false;
     }
   }

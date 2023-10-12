@@ -72,7 +72,7 @@ class LatestProduct extends StatelessWidget {
       scrollDirection: Axis.vertical,
       staggeredTileBuilder: (index) => StaggeredTile.extent(
         (index % 2 == 0) ? 1 : 1,
-        (index % 4 == 1 || index % 4 == 3) ? 285.h : 252.h,
+        (index % 4 == 1 || index % 4 == 3) ? 285.h : 270.h,
       ),
       itemBuilder: (context, index) {
         final product = maleProducts![index];

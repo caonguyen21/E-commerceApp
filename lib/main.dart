@@ -41,9 +41,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
             title: 'Flutter Shopping App',
             debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
+            theme: ThemeData(primarySwatch: Colors.grey),
             home: MainScreen());
       },
     );
