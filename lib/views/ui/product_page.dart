@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_shopping_app/controllers/favorites_provider.dart';
 import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/models/cart/add_to_cart.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_shopping_app/services/cart_helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:flutter_shopping_app/views/ui/cartpage.dart';
+import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 
@@ -18,7 +18,6 @@ import '../../models/product.dart';
 import '../shared/checkout_btn.dart';
 import '../shared/size_guide_popup.dart';
 import 'NonUser.dart';
-import 'favoritepage.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key, required this.product});
@@ -44,9 +43,10 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
+    //var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
     var authNotifier = Provider.of<LoginNotifier>(context);
-    favoritesNotifier.getFavorites();
+    String selectedSize = productNotifier.getSelectedSize();
+    // favoritesNotifier.getFavorites();
     return Scaffold(
       body: Consumer<ProductNotifier>(
         builder: (context, productNotifier, child) {
@@ -62,7 +62,7 @@ class _ProductPageState extends State<ProductPage> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
                         },
                         child: const Icon(
                           Icons.close,
@@ -108,37 +108,6 @@ class _ProductPageState extends State<ProductPage> {
                           SizedBox(
                             width: 10.w,
                           ),
-                          Consumer<FavoritesNotifier>(builder: (context, favoritesNotifier, child) {
-                            return GestureDetector(
-                              onTap: () {
-                                if (authNotifier.login == true) {
-                                  if (favoritesNotifier.ids.contains(widget.product.id)) {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
-                                  } else {
-                                    favoritesNotifier.createFav({
-                                      "id": widget.product.id,
-                                      "name": widget.product.name,
-                                      "category": widget.product.category,
-                                      "price": widget.product.price,
-                                      "imageUrl": widget.product.imageUrl[0]
-                                    });
-                                    setState(() {});
-                                  }
-                                } else {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
-                                }
-                              },
-                              child: favoritesNotifier.ids.contains(widget.product.id)
-                                  ? const Icon(
-                                      Icons.favorite,
-                                      color: Colors.black,
-                                    )
-                                  : const Icon(
-                                      Icons.favorite_border,
-                                      color: Colors.black,
-                                    ),
-                            );
-                          }),
                         ],
                       ),
                     ],
@@ -296,32 +265,35 @@ class _ProductPageState extends State<ProductPage> {
                                           itemBuilder: (context, index) {
                                             final sizes = productNotifier.productSizes[index];
                                             return Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8.0).w,
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                               child: ChoiceChip(
-                                                  disabledColor: Colors.white,
-                                                  label: Text(
-                                                    sizes['size'],
-                                                    // Assuming 'size' is a key in the map
-                                                    style: appstyle(
-                                                      16.sp,
-                                                      sizes['isSelected'] ? Colors.white : Colors.black,
-                                                      FontWeight.w500,
-                                                    ),
+                                                disabledColor: Colors.white,
+                                                label: Text(
+                                                  sizes['size'], // Assuming 'size' is a key in the map
+                                                  style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    color: sizes['isSelected'] ? Colors.white : Colors.black,
+                                                    fontWeight: FontWeight.w500,
                                                   ),
-                                                  selectedColor: Colors.black,
-                                                  padding: const EdgeInsets.symmetric(vertical: 8).w,
-                                                  selected: sizes['isSelected'],
-                                                  onSelected: (newState) {
-                                                    final selectedSize = sizes['size'];
-                                                    setState(() {
-                                                      if (productNotifier.sizes.contains(selectedSize)) {
-                                                        productNotifier.sizes.remove(selectedSize);
-                                                      } else {
-                                                        productNotifier.sizes.add(selectedSize);
+                                                ),
+                                                selectedColor: Colors.black,
+                                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                                selected: sizes['isSelected'],
+                                                onSelected: (newState) {
+                                                  setState(() {
+                                                    // Deselect previously selected size
+                                                    for (var i = 0; i < productNotifier.productSizes.length; i++) {
+                                                      if (i != index) {
+                                                        productNotifier.productSizes[i]['isSelected'] = false;
                                                       }
-                                                      productNotifier.toggleCheck(index); // Call toggleCheck with the index
-                                                    });
-                                                  }),
+                                                    }
+
+                                                    sizes['isSelected'] = newState;
+                                                  });
+
+                                                  // Print the selected size
+                                                },
+                                              ),
                                             );
                                           },
                                         ),
@@ -380,14 +352,13 @@ class _ProductPageState extends State<ProductPage> {
           onTap: () {
             if (authNotifier.login == true) {
               // Check if product sizes are available
-              if (productNotifier.sizes.isNotEmpty) {
-                // print(productNotifier.sizes);
-                // Add the product to the cart
-                AddToCart model = AddToCart(cartItem: widget.product.id, quantity: 1);
-                CartHelper().addToCart(model, 'increment').then((success) {
+              if (selectedSize.isNotEmpty) {
+                AddToCart model = AddToCart(cartItem: widget.product.id, quantity: 1, size: selectedSize);
+                CartHelper().addToCart(model, 'increment', selectedSize).then((success) {
                   if (success) {
                     setState(() {
                       _cartList = CartHelper().getCart();
+                      productNotifier.clearSelectedSizes();
                     });
                   }
                 });

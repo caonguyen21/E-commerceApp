@@ -1,40 +1,31 @@
-import 'dart:convert';
-
-List<GetCart> getCartFromJson(String str) => List<GetCart>.from(json.decode(str).map((x) => GetCart.fromJson(x)));
-
-
-class GetCart {
-    List<Product> products;
-
-    GetCart({
-        required this.products,
-    });
-
-    factory GetCart.fromJson(Map<String, dynamic> json) => GetCart(
-        products: List<Product>.from(json["products"].map((x) => Product.fromJson(x))),
-    );
-
-
-}
-
 class Product {
     ProductItem cartItem;
     int quantity;
     String id;
+    String size; // Change the type of size to int
 
     Product({
         required this.cartItem,
         required this.quantity,
         required this.id,
+        required this.size,
     });
 
     factory Product.fromJson(Map<String, dynamic> json) => Product(
         cartItem: ProductItem.fromJson(json["cartItem"]),
         quantity: json["quantity"],
         id: json["_id"],
+        size: json["size"], // Update to include size
     );
 
-
+    Map<String, dynamic> toJson() {
+        return {
+            "_id": id,
+            "quantity": quantity,
+            "size": size, // Include size in the JSON representation
+            "cartItem": cartItem.toJson(),
+        };
+    }
 }
 
 class ProductItem {
@@ -59,6 +50,7 @@ class ProductItem {
         imageUrl: List<String>.from(json["imageUrl"].map((x) => x)),
         price: json["price"],
     );
+
     Map<String, dynamic> toJson() {
         return {
             "_id": id,
@@ -68,5 +60,4 @@ class ProductItem {
             "price": price,
         };
     }
-    
 }

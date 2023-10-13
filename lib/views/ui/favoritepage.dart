@@ -1,21 +1,36 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_shopping_app/controllers/login_provider.dart';
-import 'package:flutter_shopping_app/views/ui/NonUser.dart';
+import 'package:flutter_shopping_app/models/favorite/get_productsfav.dart';
+import 'package:flutter_shopping_app/services/fav_helper.dart';
+import 'package:flutter_shopping_app/views/shared/appstyle.dart';
+import 'package:flutter_shopping_app/views/ui/product_page.dart';
 import 'package:provider/provider.dart';
 
-import '../../controllers/favorites_provider.dart';
-import '../shared/appstyle.dart';
+import '../../controllers/login_provider.dart';
+import '../../controllers/product_provider.dart';
+import '../shared/reusableText.dart';
+import 'NonUser.dart';
 
-class FavoritePage extends StatelessWidget {
+class FavoritePage extends StatefulWidget {
   const FavoritePage({Key? key}) : super(key: key);
 
   @override
+  _FavoritePageState createState() => _FavoritePageState();
+}
+
+class _FavoritePageState extends State<FavoritePage> {
+  late Future<List<ProductFav>> _favList;
+
+  @override
+  void initState() {
+    _favList = FavoriteHelper().getFavorites();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
     var authNotifier = Provider.of<LoginNotifier>(context);
-    favoritesNotifier.getAllFav();
+    var productProvider = Provider.of<ProductNotifier>(context);
     return authNotifier.login == false
         ? const NonUser()
         : Scaffold(
@@ -39,33 +54,63 @@ class FavoritePage extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                      padding: EdgeInsets.only(top: 115.h),
-                      child: favoritesNotifier.fav.isEmpty
-                          ? Center(
-                              child: Text(
-                                'No items in favorites.',
-                                style: appstyle(28, Colors.black, FontWeight.bold),
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: favoritesNotifier.fav.length,
-                              padding: EdgeInsets.zero,
-                              itemBuilder: (BuildContext context, int index) {
-                                final product = favoritesNotifier.fav[index];
-                                return ProductItem(
-                                  product: product,
-                                  onDelete: () {
-                                    favoritesNotifier.deleteFav(product['key']);
-                                    favoritesNotifier.ids.removeWhere((element) => element == product['id']);
+                    padding: const EdgeInsets.only(top: 115),
+                    child: FutureBuilder(
+                      future: _favList,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: ReusableText(
+                              text: 'Error: ${snapshot.error}',
+                              style: appstyle(18, Colors.black, FontWeight.w600),
+                            ),
+                          );
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No items in favorites.',
+                              style: appstyle(28, Colors.black, FontWeight.bold),
+                            ),
+                          );
+                        } else {
+                          final favData = snapshot.data!;
+                          return ListView.builder(
+                            itemCount: favData.length,
+                            padding: EdgeInsets.zero,
+                            itemBuilder: (BuildContext context, int index) {
+                              final data = favData[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  productProvider.productSizes = (data.favItem.sizes).cast<Map<String, dynamic>>();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => ProductPage(product: data.favItem)),
+                                  );
+                                },
+                                child: ProductItem(
+                                  data: data,
+                                  onDelete: () async {
+                                    await FavoriteHelper().deleteFavorite(data.favItem.id).then((response) {
+                                      if (response == true) {
+                                        setState(() {
+                                          _favList = FavoriteHelper().getFavorites();
+                                        });
+                                      }
+                                    });
                                   },
-                                  onFavoriteDeleted: () {
-                                    favoritesNotifier.getAllFav();
-                                    // Rebuild FavoritePage
-                                    Provider.of<FavoritesNotifier>(context, listen: false).notifyListeners();
-                                  },
-                                );
-                              },
-                            ))
+                                  onFavoriteDeleted: () {},
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -74,13 +119,13 @@ class FavoritePage extends StatelessWidget {
 }
 
 class ProductItem extends StatelessWidget {
-  final Map<String, dynamic> product;
+  final ProductFav data;
   final VoidCallback onDelete;
   final VoidCallback onFavoriteDeleted;
 
   const ProductItem({
     Key? key,
-    required this.product,
+    required this.data,
     required this.onDelete,
     required this.onFavoriteDeleted,
   }) : super(key: key);
@@ -106,7 +151,7 @@ class ProductItem extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(12),
                     child: CachedNetworkImage(
-                      imageUrl: product["imageUrl"],
+                      imageUrl: data.favItem.imageUrl[0],
                       width: 70,
                       height: 70,
                       fit: BoxFit.fill,
@@ -119,28 +164,31 @@ class ProductItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          product['name'],
+                          data.favItem.name,
                           style: appstyle(16, Colors.black, FontWeight.bold),
                         ),
                         const SizedBox(
                           height: 5,
                         ),
                         Text(
-                          product['category'],
+                          data.favItem.category,
                           style: appstyle(14, Colors.grey, FontWeight.w600),
                         ),
                         const SizedBox(
                           height: 5,
                         ),
-                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Text(
-                            "\$${product['price']}",
-                            style: appstyle(16, Colors.black, FontWeight.w600),
-                          ),
-                        ]),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '\$${data.favItem.price}',
+                              style: appstyle(16, Colors.black, FontWeight.w600),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
               Padding(

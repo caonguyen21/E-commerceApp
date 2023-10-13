@@ -39,9 +39,9 @@ class _ProductByCatState extends State<ProductByCat> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     var productNotifier = Provider.of<ProductNotifier>(context);
-    productNotifier.getMale();
-    productNotifier.getFemale();
-    productNotifier.getKids();
+    productNotifier.male;
+    productNotifier.female;
+    productNotifier.kids;
     return Scaffold(
         backgroundColor: const Color(0xFFE2E2E2),
         body: SizedBox(

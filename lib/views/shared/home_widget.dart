@@ -46,7 +46,7 @@ class HomeWidget extends StatelessWidget {
                       final product = snapshot.data![index];
                       return GestureDetector(
                         onTap: () {
-                          productNotifier.productSizes = product.sizes;
+                          productNotifier.productSizes = (product.sizes).cast<Map<String, dynamic>>();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -60,6 +60,10 @@ class HomeWidget extends StatelessWidget {
                           name: product.name,
                           image: product.imageUrl[0],
                           id: product.id,
+                          title: product.title,
+                          oldPrice: product.oldPrice,
+                          sizes: product.sizes.join(', '),
+                          description: product.description,
                         ),
                       );
                     },
@@ -127,7 +131,7 @@ class HomeWidget extends StatelessWidget {
                       if (product.imageUrl.isNotEmpty && product.imageUrl.length > 1) {
                         return GestureDetector(
                           onTap: () {
-                            productNotifier.productSizes = product.sizes;
+                            productNotifier.productSizes = (product.sizes).cast<Map<String, dynamic>>();
                             Navigator.push(context, MaterialPageRoute(builder: (context) => ProductPage(product: product)));
                           },
                           child: NewProduct(

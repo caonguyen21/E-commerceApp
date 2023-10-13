@@ -4,9 +4,8 @@ import '../models/product.dart';
 import '../services/helper.dart';
 
 class ProductNotifier extends ChangeNotifier {
-  List<dynamic> _productSizes = [];
+  List<Map<String, dynamic>> _productSizes = [];
   List<String> _sizes = [];
-
   int _activePage = 0;
 
   int get activePage => _activePage;
@@ -16,9 +15,9 @@ class ProductNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<dynamic> get productSizes => _productSizes;
+  List<Map<String, dynamic>> get productSizes => _productSizes;
 
-  set productSizes(List<dynamic> newSizes) {
+  set productSizes(List<Map<String, dynamic>> newSizes) {
     _productSizes = newSizes;
     notifyListeners();
   }
@@ -36,23 +35,23 @@ class ProductNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  late Future<List<Products>> male;
-  late Future<List<Products>> female;
-  late Future<List<Products>> kids;
-
-  void getMale() {
-    male = Helper().getMaleProducts();
+  String getSelectedSize() {
+    final selectedSize = _productSizes.firstWhere((size) => size['isSelected'], orElse: () => {});
+    return selectedSize['size'] ?? ''; // Return an empty string if no size is selected
   }
 
-  void getFemale() {
-    female = Helper().getFemaleProducts();
+  void clearSelectedSizes() {
+    for (var i = 0; i < _productSizes.length; i++) {
+      _productSizes[i]['isSelected'] = false;
+    }
+    notifyListeners();
   }
 
-  void getKids() {
-    kids = Helper().getKidsProducts();
-  }
+  late Future<List<Products>> male = Helper().getMaleProducts();
+  late Future<List<Products>> female = Helper().getFemaleProducts();
+  late Future<List<Products>> kids = Helper().getKidsProducts();
 
-  Future<void> fetchProducts() async {
+  void fetchProducts() {
     notifyListeners();
   }
 }

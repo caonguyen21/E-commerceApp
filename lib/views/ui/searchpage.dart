@@ -105,7 +105,7 @@ class _SearchPageState extends State<SearchPage> {
               final product = products[index];
               return GestureDetector(
                 onTap: () {
-                  productProvider.productSizes = product.sizes;
+                  productProvider.productSizes = (product.sizes).cast<Map<String, dynamic>>();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => ProductPage(product: product)),

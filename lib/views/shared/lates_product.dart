@@ -45,7 +45,7 @@ class LatestProduct extends StatelessWidget {
     if (product.imageUrl.length >= 2) {
       return GestureDetector(
         onTap: () {
-          Provider.of<ProductNotifier>(context, listen: false).productSizes = product.sizes;
+          Provider.of<ProductNotifier>(context, listen: false).productSizes = (product.sizes).cast<Map<String, dynamic>>();
           Navigator.push(
             context,
             MaterialPageRoute(
