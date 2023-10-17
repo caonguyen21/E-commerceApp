@@ -31,7 +31,24 @@ class FavoriteHelper {
         body: jsonEncode(requestBody),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 307) {
+        // If the server returns a 307 status code, get the new location and retry the request
+        String redirectUrl = response.headers['location'] ?? '';
+
+        // Retry the request with the new location
+        final redirectedResponse = await http.post(
+          Uri.parse(redirectUrl),
+          headers: requestHeaders,
+          body: jsonEncode(requestBody),
+        );
+
+        if (redirectedResponse.statusCode == 200) {
+          return true;
+        } else {
+          // Handle the case where the redirected request was not successful
+          return false;
+        }
+      } else if (response.statusCode == 200) {
         return true;
       } else {
         return false;

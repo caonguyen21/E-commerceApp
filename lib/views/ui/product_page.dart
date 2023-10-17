@@ -1,21 +1,23 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/models/cart/add_to_cart.dart';
 import 'package:flutter_shopping_app/services/cart_helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
-import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:flutter_shopping_app/views/ui/cartpage.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 
 import '../../models/cart/get_products.dart';
+import '../../models/favorite/add_to_fav.dart';
+import '../../models/favorite/get_productsfav.dart';
 import '../../models/product.dart';
+import '../../services/fav_helper.dart';
 import '../shared/checkout_btn.dart';
+import '../shared/reusableText.dart';
 import '../shared/size_guide_popup.dart';
 import 'NonUser.dart';
 
@@ -32,29 +34,67 @@ class _ProductPageState extends State<ProductPage> {
   final PageController pageController = PageController();
   late ProductNotifier productNotifier;
   late Future<List<Product>> _cartList;
+  late bool isProductFavorite;
+  bool _isMounted = false;
+
+  @override
+  void dispose() {
+    _isMounted = false;
+    super.dispose();
+  }
+
+  Future<void> loadFavorites() async {
+    try {
+      List<ProductFav> favorites = await FavoriteHelper().getFavorites();
+      if (_isMounted) {
+        setState(() {
+          isProductFavorite = favorites.any((fav) => fav.favItem.id == widget.product.id);
+        });
+      }
+    } catch (e) {
+      // Handle errors
+    }
+  }
+
+  Future<void> toggleFavorite() async {
+    try {
+      if (isProductFavorite) {
+        await FavoriteHelper().deleteFavorite(widget.product.id);
+      } else {
+        await FavoriteHelper().addFavorite(Favorite(productId: widget.product.id));
+      }
+      setState(() {
+        isProductFavorite = !isProductFavorite; // Toggle the favorite status
+      });
+    } catch (e) {
+      // Handle errors
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     _cartList = CartHelper().getCart();
     productNotifier = Provider.of<ProductNotifier>(context, listen: false);
+    _isMounted = true;
+    isProductFavorite = false; // Initialize to false
+    loadFavorites();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    //var favoritesNotifier = Provider.of<FavoritesNotifier>(context);
     var authNotifier = Provider.of<LoginNotifier>(context);
     String selectedSize = productNotifier.getSelectedSize();
-    // favoritesNotifier.getFavorites();
     return Scaffold(
+      backgroundColor: const Color(0xFFE2E2E2),
       body: Consumer<ProductNotifier>(
         builder: (context, productNotifier, child) {
           return CustomScrollView(
             slivers: [
               SliverAppBar(
                 automaticallyImplyLeading: false,
-                leadingWidth: 0,
+                pinned: true,
                 title: Padding(
                   padding: EdgeInsets.only(bottom: 10.h),
                   child: Row(
@@ -82,7 +122,7 @@ class _ProductPageState extends State<ProductPage> {
                                   color: Colors.black,
                                 ),
                                 Positioned(
-                                  right: -2,
+                                  right: 0,
                                   top: -5,
                                   child: Container(
                                     padding: const EdgeInsets.all(3.0),
@@ -108,16 +148,25 @@ class _ProductPageState extends State<ProductPage> {
                           SizedBox(
                             width: 10.w,
                           ),
+                          GestureDetector(
+                            onTap: () async {
+                              if (authNotifier.login == true) {
+                                await toggleFavorite();
+                              } else {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
+                              }
+                            },
+                            child: Icon(
+                              isProductFavorite ? Icons.favorite : Icons.favorite_outline,
+                            ),
+                          )
                         ],
                       ),
                     ],
                   ),
                 ),
-                pinned: true,
-                snap: false,
-                floating: true,
                 backgroundColor: Colors.transparent,
-                expandedHeight: MediaQuery.of(context).size.height,
+                expandedHeight: 275.h,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Stack(
                     children: [
@@ -144,10 +193,9 @@ class _ProductPageState extends State<ProductPage> {
                                     ),
                                   ),
                                   Positioned(
-                                      bottom: 0,
+                                      bottom: 30,
                                       right: 0,
                                       left: 0,
-                                      height: 243.6.h,
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: List<Widget>.generate(
@@ -165,218 +213,190 @@ class _ProductPageState extends State<ProductPage> {
                               );
                             }),
                       ),
-                      Positioned(
-                        bottom: 10,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-                          child: Container(
-                            height: 523.74.h,
-                            width: 375.w,
-                            color: Colors.white,
-                            child: Padding(
-                              padding: EdgeInsets.all(12.h),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ReusableText(
-                                    text: widget.product.name,
-                                    style: appstyle(40.sp, Colors.black, FontWeight.bold),
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 210.w,
-                                        child: ReusableText(
-                                          text: widget.product.name,
-                                          style: appstyle(20.sp, Colors.grey, FontWeight.w500),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 20.w,
-                                      ),
-                                      RatingBar.builder(
-                                        initialRating: 4,
-                                        minRating: 1,
-                                        direction: Axis.horizontal,
-                                        allowHalfRating: true,
-                                        itemCount: 5,
-                                        itemSize: 22,
-                                        itemPadding: const EdgeInsets.symmetric(horizontal: 1),
-                                        itemBuilder: (context, _) => Icon(Icons.star, size: 18.h, color: Colors.black),
-                                        onRatingUpdate: (rating) {
-                                          // You can add your code here to handle the updated rating.
-                                          // print("New Rating: $rating");
-                                          // You might want to update some state variables or perform other actions.
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "\$${widget.product.price}",
-                                        style: appstyle(26.sp, Colors.black, FontWeight.w600),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          ReusableText(
-                                            text: "Select sizes",
-                                            style: appstyle(20.sp, Colors.black, FontWeight.w600),
-                                          ),
-                                          SizedBox(
-                                            width: 20.w,
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return ShoeSizeGuidePopup();
-                                                },
-                                              );
-                                            },
-                                            child: ReusableText(
-                                              text: "View Size Guide",
-                                              style: appstyle(20.sp, Colors.grey, FontWeight.w600),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 5.h,
-                                      ),
-                                      SizedBox(
-                                        height: 40.h,
-                                        child: ListView.builder(
-                                          itemCount: productNotifier.productSizes.length,
-                                          scrollDirection: Axis.horizontal,
-                                          padding: EdgeInsets.zero,
-                                          itemBuilder: (context, index) {
-                                            final sizes = productNotifier.productSizes[index];
-                                            return Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                              child: ChoiceChip(
-                                                disabledColor: Colors.white,
-                                                label: Text(
-                                                  sizes['size'], // Assuming 'size' is a key in the map
-                                                  style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    color: sizes['isSelected'] ? Colors.white : Colors.black,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                                selectedColor: Colors.black,
-                                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                                selected: sizes['isSelected'],
-                                                onSelected: (newState) {
-                                                  setState(() {
-                                                    // Deselect previously selected size
-                                                    for (var i = 0; i < productNotifier.productSizes.length; i++) {
-                                                      if (i != index) {
-                                                        productNotifier.productSizes[i]['isSelected'] = false;
-                                                      }
-                                                    }
-
-                                                    sizes['isSelected'] = newState;
-                                                  });
-
-                                                  // Print the selected size
-                                                },
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 5.h,
-                                  ),
-                                  const Divider(
-                                    indent: 10,
-                                    endIndent: 10,
-                                    color: Colors.black,
-                                  ),
-                                  SizedBox(
-                                    height: 5.h,
-                                  ),
-                                  SizedBox(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Text(
-                                        widget.product.title,
-                                        style: appstyle(22.sp, Colors.black, FontWeight.w700),
-                                      )),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  SingleChildScrollView(
-                                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-                                    ReadMoreText(
-                                      widget.product.description,
-                                      trimLines: 4,
-                                      style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.normal),
-                                      colorClickableText: Colors.blue,
-                                      trimMode: TrimMode.Line,
-                                      trimCollapsedText: '...Read more',
-                                      trimExpandedText: ' Less',
-                                    ),
-                                  ])),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
                     ],
                   ),
                 ),
               ),
+              SliverToBoxAdapter(
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+                  child: Container(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: EdgeInsets.all(12.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ReusableText(
+                            text: widget.product.name,
+                            style: appstyle(40.sp, Colors.black, FontWeight.bold),
+                          ),
+                          ReusableText(
+                            text: widget.product.category,
+                            style: appstyle(20.sp, Colors.grey, FontWeight.w500),
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "\$${widget.product.price}",
+                                style: appstyle(26.sp, Colors.black, FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  ReusableText(
+                                    text: "Select sizes",
+                                    style: appstyle(20.sp, Colors.black, FontWeight.w600),
+                                  ),
+                                  SizedBox(
+                                    width: 20.w,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return ShoeSizeGuidePopup();
+                                        },
+                                      );
+                                    },
+                                    child: ReusableText(
+                                      text: "View Size Guide",
+                                      style: appstyle(20.sp, Colors.grey, FontWeight.w600),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: 5.h,
+                              ),
+                              SizedBox(
+                                height: 40.h,
+                                child: ListView.builder(
+                                  itemCount: productNotifier.productSizes.length,
+                                  scrollDirection: Axis.horizontal,
+                                  padding: EdgeInsets.zero,
+                                  itemBuilder: (context, index) {
+                                    final sizes = productNotifier.productSizes[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: ChoiceChip(
+                                        disabledColor: Colors.white,
+                                        label: Text(
+                                          sizes['size'], // Assuming 'size' is a key in the map
+                                          style: TextStyle(
+                                            fontSize: 16.sp,
+                                            color: sizes['isSelected'] ? Colors.white : Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        selectedColor: Colors.black,
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                        selected: sizes['isSelected'],
+                                        onSelected: (newState) {
+                                          setState(() {
+                                            // Deselect previously selected size
+                                            for (var i = 0; i < productNotifier.productSizes.length; i++) {
+                                              if (i != index) {
+                                                productNotifier.productSizes[i]['isSelected'] = false;
+                                              }
+                                            }
+
+                                            sizes['isSelected'] = newState;
+                                          });
+
+                                          // Print the selected size
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          const Divider(
+                            indent: 10,
+                            endIndent: 10,
+                            color: Colors.black,
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: Text(
+                                widget.product.title,
+                                style: appstyle(22.sp, Colors.black, FontWeight.w700),
+                              )),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          ReadMoreText(
+                            widget.product.description,
+                            trimLines: 6,
+                            style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.normal),
+                            colorClickableText: Colors.blue,
+                            trimMode: TrimMode.Line,
+                            trimCollapsedText: '...Read more',
+                            trimExpandedText: ' Less',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
             ],
           );
         },
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8),
-        child: CheckoutBtn(
-          onTap: () {
-            if (authNotifier.login == true) {
-              // Check if product sizes are available
-              if (selectedSize.isNotEmpty) {
-                AddToCart model = AddToCart(cartItem: widget.product.id, quantity: 1, size: selectedSize);
-                CartHelper().addToCart(model, 'increment', selectedSize).then((success) {
-                  if (success) {
-                    setState(() {
-                      _cartList = CartHelper().getCart();
-                      productNotifier.clearSelectedSizes();
-                    });
-                  }
-                });
-                _showSuccessDialog(context);
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: CheckoutBtn(
+            onTap: () {
+              if (authNotifier.login == true) {
+                // Check if product sizes are available
+                if (selectedSize.isNotEmpty) {
+                  AddToCart model = AddToCart(cartItem: widget.product.id, quantity: 1, size: selectedSize);
+                  CartHelper().addToCart(model, 'increment', selectedSize).then((success) {
+                    if (success) {
+                      setState(() {
+                        _cartList = CartHelper().getCart();
+                        productNotifier.clearSelectedSizes();
+                      });
+                    }
+                  });
+                  _showSuccessDialog(context);
+                } else {
+                  // Show a snackbar indicating no sizes available
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('No sizes available for this product.'),
+                    ),
+                  );
+                }
               } else {
-                // Show a snackbar indicating no sizes available
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('No sizes available for this product.'),
-                  ),
-                );
+                // Navigate to a non-user page
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
               }
-            } else {
-              // Navigate to a non-user page
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const NonUser()));
-            }
-          },
-          label: 'Add to bag',
+            },
+            label: 'Add to bag',
+          ),
         ),
       ),
     );
