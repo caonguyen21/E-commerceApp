@@ -29,33 +29,25 @@ class BottomNavbar extends StatelessWidget {
                     onTap: () {
                       mainScreenNotifier.pageIndex = 0;
                     },
-                    icon: mainScreenNotifier.pageIndex == 0
-                        ? Ionicons.home
-                        : Ionicons.home_outline,
+                    icon: mainScreenNotifier.pageIndex == 0 ? Ionicons.home : Ionicons.home_outline,
                   ),
                   BottomNavWidget(
                     onTap: () {
                       mainScreenNotifier.pageIndex = 1;
                     },
-                    icon: mainScreenNotifier.pageIndex == 1
-                        ? Ionicons.search
-                        : Ionicons.search_outline,
+                    icon: mainScreenNotifier.pageIndex == 1 ? Ionicons.search : Ionicons.search_outline,
                   ),
                   BottomNavWidget(
                     onTap: () {
                       mainScreenNotifier.pageIndex = 2;
                     },
-                    icon: mainScreenNotifier.pageIndex == 2
-                        ? Ionicons.heart
-                        : Ionicons.heart_outline,
+                    icon: mainScreenNotifier.pageIndex == 2 ? Ionicons.heart : Ionicons.heart_outline,
                   ),
                   BottomNavWidget(
                     onTap: () {
                       mainScreenNotifier.pageIndex = 3;
                     },
-                    icon: mainScreenNotifier.pageIndex == 3
-                        ? Ionicons.person
-                        : Ionicons.person_outline,
+                    icon: mainScreenNotifier.pageIndex == 3 ? Ionicons.person : Ionicons.person_outline,
                   ),
                 ],
               ),

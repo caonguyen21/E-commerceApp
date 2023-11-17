@@ -14,12 +14,12 @@ class LoginModel {
   final String password;
 
   factory LoginModel.fromJson(Map<String, dynamic> json) => LoginModel(
-    email: json["email"],
-    password: json["password"],
-  );
+        email: json["email"],
+        password: json["password"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "email": email,
-    "password": password,
-  };
+        "email": email,
+        "password": password,
+      };
 }

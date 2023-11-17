@@ -278,7 +278,7 @@ class _ProductPageState extends State<ProductPage> {
                                 ],
                               ),
                               SizedBox(
-                                height: 5.h,
+                                height: 10.h,
                               ),
                               SizedBox(
                                 height: 40.h,
@@ -325,7 +325,7 @@ class _ProductPageState extends State<ProductPage> {
                             ],
                           ),
                           SizedBox(
-                            height: 5.h,
+                            height: 10.h,
                           ),
                           const Divider(
                             indent: 10,
@@ -333,7 +333,7 @@ class _ProductPageState extends State<ProductPage> {
                             color: Colors.black,
                           ),
                           SizedBox(
-                            height: 5.h,
+                            height: 10.h,
                           ),
                           SizedBox(
                               width: MediaQuery.of(context).size.width,
@@ -346,7 +346,7 @@ class _ProductPageState extends State<ProductPage> {
                           ),
                           ReadMoreText(
                             widget.product.description,
-                            trimLines: 6,
+                            trimLines: 5,
                             style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.normal),
                             colorClickableText: Colors.blue,
                             trimMode: TrimMode.Line,
