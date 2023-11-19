@@ -5,6 +5,7 @@ import 'package:flutter_shopping_app/views/shared/tiles_widget.dart';
 import 'package:flutter_shopping_app/views/ui/NonUser.dart';
 import 'package:flutter_shopping_app/views/ui/auth/login.dart';
 import 'package:flutter_shopping_app/views/ui/favoritepage.dart';
+import 'package:flutter_shopping_app/views/ui/orders/orders.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
@@ -170,7 +171,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 title: "My Orders",
                                 leading: Icons.delivery_dining_outlined,
                                 OnTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProcessOrders()));
                                 },
                               ),
                               TilesWidget(
@@ -198,9 +199,19 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: Colors.grey.shade200,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              TilesWidget(title: "Coupons", leading: Icons.tag_outlined),
-                              TilesWidget(title: "My Store", leading: Icons.store_outlined),
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  showComingSoonDialog(context, "Coupons"); // Pass the title to the function
+                                },
+                                child: const TilesWidget(title: "Coupons", leading: Icons.tag_outlined),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  showComingSoonDialog(context, "My Store"); // Pass the title to the function
+                                },
+                                child: const TilesWidget(title: "My Store", leading: Icons.store_outlined),
+                              ),
                             ],
                           ),
                         ),
@@ -213,8 +224,18 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const TilesWidget(title: "Shipping addresses", leading: Icons.location_on_outlined),
-                              const TilesWidget(title: "Settings", leading: Icons.settings_outlined),
+                              GestureDetector(
+                                onTap: () {
+                                  showComingSoonDialog(context, "Shipping addresses"); // Pass the title to the function
+                                },
+                                child: const TilesWidget(title: "Shipping addresses", leading: Icons.location_on_outlined),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  showComingSoonDialog(context, "Settings"); // Pass the title to the function
+                                },
+                                child: const TilesWidget(title: "Settings", leading: Icons.settings_outlined),
+                              ),
                               TilesWidget(
                                   OnTap: () {
                                     authNotifier.logout();
@@ -233,4 +254,26 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           );
   }
+}
+
+Future<void> showComingSoonDialog(BuildContext context, String title) async {
+  await Future.delayed(const Duration(seconds: 1));
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Coming Soon'),
+        content: Text('The $title feature is coming soon!'), // Use the title in the dialog
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
 }

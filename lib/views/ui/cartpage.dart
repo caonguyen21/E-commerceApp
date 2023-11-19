@@ -2,15 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/cart_provider.dart';
+import 'package:flutter_shopping_app/controllers/payment_controller.dart';
 import 'package:flutter_shopping_app/models/cart/add_to_cart.dart';
 import 'package:flutter_shopping_app/services/cart_helper.dart';
+import 'package:flutter_shopping_app/services/payment_helper.dart';
 import 'package:flutter_shopping_app/views/shared/checkout_btn.dart';
-import 'package:flutter_shopping_app/views/ui/NonUser.dart';
+import 'package:flutter_shopping_app/views/ui/payments/payment_webview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../controllers/login_provider.dart';
 import '../../models/cart/get_products.dart';
+import '../../models/orders/orders_req.dart';
 import '../shared/appstyle.dart';
 import '../shared/reusableText.dart';
 
@@ -35,10 +38,10 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    var authNotifier = Provider.of<LoginNotifier>(context);
     var cartProvider = Provider.of<CartProvider>(context);
-    return authNotifier.login == false
-        ? const NonUser()
+    var paymentNotifier = Provider.of<PaymentNotifier>(context);
+    return paymentNotifier.paymentUrl.contains('https')
+        ? const PaymentWebView()
         : Scaffold(
             backgroundColor: const Color(0xFFE2E2E2),
             body: Padding(
@@ -136,6 +139,7 @@ class _CartPageState extends State<CartPage> {
                                         return GestureDetector(
                                           onTap: () {
                                             cartProvider.toggleSelection(index);
+                                            cartProvider.checkout.insert(0, data);
                                           },
                                           child: Padding(
                                             padding: const EdgeInsets.all(8),
@@ -386,6 +390,26 @@ class _CartPageState extends State<CartPage> {
                                     height: 10.h,
                                   ),
                                   CheckoutBtn(
+                                    onTap: () async {
+                                      // Get user ID from SharedPreferences
+                                      final SharedPreferences prefs = await SharedPreferences.getInstance();
+                                      String? userId = prefs.getString('userId') ?? "";
+
+                                      // Create an instance of the Order class
+                                      Order model = Order(
+                                        userId: userId,
+                                        cartItems: [
+                                          CartItem(
+                                              name: cartProvider.checkout[0].cartItem.name,
+                                              id: cartProvider.checkout[0].cartItem.id,
+                                              price: cartProvider.checkout[0].cartItem.price,
+                                              cartQuantity: cartProvider.checkout[0].quantity)
+                                        ],
+                                      );
+                                      PaymentHelper().payment(model).then((value) {
+                                        paymentNotifier.setPaymentUrl = value;
+                                      });
+                                    },
                                     label: 'Proceed to Checkout',
                                   ),
                                 ],

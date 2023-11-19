@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_shopping_app/models/cart/add_to_cart.dart';
+import 'package:flutter_shopping_app/models/orders/orders_res.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -134,6 +135,32 @@ class CartHelper {
     } catch (error) {
       // Handle errors here
       return false;
+    }
+  }
+
+  Future<List<PaidOrders>> getOrder() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userToken = prefs.getString('token');
+
+    if (userToken == null) {
+      // User is not logged in, handle accordingly (e.g., show a message)
+      throw Exception('User is not logged in. Please log in to view the cart.');
+    }
+
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'token': 'Bearer $userToken',
+    };
+
+    var url = Uri.http(Config.apiUrl, Config.orders);
+
+    var response = await client.get(url, headers: requestHeaders);
+
+    if (response.statusCode == 200) {
+      var products = paidOrdersFromJson(response.body);
+      return products;
+    } else {
+      throw Exception("Failed to get cart items");
     }
   }
 }

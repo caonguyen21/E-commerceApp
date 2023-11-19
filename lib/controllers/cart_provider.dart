@@ -6,6 +6,14 @@ import '../models/cart/get_products.dart';
 
 class CartProvider with ChangeNotifier {
   final Set<int> _selectedIndices = <int>{};
+  List<Product> _checkout = [];
+
+  List<Product> get checkout => _checkout;
+
+  set setCheckoutList(List<Product> newSate) {
+    _checkout = newSate;
+    notifyListeners();
+  }
 
   Set<int> get selectedIndices => _selectedIndices;
 
@@ -24,7 +32,6 @@ class CartProvider with ChangeNotifier {
     for (int index in _selectedIndices) {
       if (index >= 0 && index < cartData.length) {
         Product product = cartData[index];
-        // Convert the price from String to double and then calculate total price
         double productPrice = double.tryParse(product.cartItem.price) ?? 0.0;
         totalPrice += productPrice * product.quantity;
       }

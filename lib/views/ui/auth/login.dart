@@ -39,6 +39,10 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0,
         toolbarHeight: 50.h,
         backgroundColor: Colors.black,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),

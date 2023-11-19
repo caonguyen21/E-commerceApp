@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/controllers/mainscreen_provider.dart';
+import 'package:flutter_shopping_app/controllers/payment_controller.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
 import 'package:hive/hive.dart';
@@ -20,6 +21,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => ProductNotifier()),
     ChangeNotifierProvider(create: (context) => CartProvider()),
     ChangeNotifierProvider(create: (context) => LoginNotifier()),
+    ChangeNotifierProvider(create: (context) => PaymentNotifier()),
   ], child: const MyApp()));
 }
 
