@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/services/auth_helper.dart';
-import 'package:flutter_shopping_app/views/shared/tiles_widget.dart';
-import 'package:flutter_shopping_app/views/ui/NonUser.dart';
+import 'package:flutter_shopping_app/views/shared/widget/tiles_widget.dart';
+import '../auth/nonuser.dart';
 import 'package:flutter_shopping_app/views/ui/auth/login.dart';
-import 'package:flutter_shopping_app/views/ui/favoritepage.dart';
+import 'package:flutter_shopping_app/views/ui/page/favoritepage.dart';
 import 'package:flutter_shopping_app/views/ui/orders/orders.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
-import '../../controllers/login_provider.dart';
-import '../shared/appstyle.dart';
-import '../shared/reusableText.dart';
+import '../../../controllers/login_provider.dart';
+import '../../shared/appstyle.dart';
+import '../../shared/reusableText.dart';
 import 'cartpage.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -170,21 +170,21 @@ class _ProfilePageState extends State<ProfilePage> {
                               TilesWidget(
                                 title: "My Orders",
                                 leading: Icons.delivery_dining_outlined,
-                                OnTap: () {
+                                onTap: () {
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => const ProcessOrders()));
                                 },
                               ),
                               TilesWidget(
                                 title: "My Favorites",
                                 leading: Icons.favorite_outline,
-                                OnTap: () {
+                                onTap: () {
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritePage()));
                                 },
                               ),
                               TilesWidget(
                                 title: "Cart",
                                 leading: Icons.shopping_bag_outlined,
-                                OnTap: () {
+                                onTap: () {
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage()));
                                 },
                               )
@@ -237,7 +237,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: const TilesWidget(title: "Settings", leading: Icons.settings_outlined),
                               ),
                               TilesWidget(
-                                  OnTap: () {
+                                  onTap: () {
                                     authNotifier.logout();
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                                   },
@@ -257,7 +257,7 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 Future<void> showComingSoonDialog(BuildContext context, String title) async {
-  await Future.delayed(const Duration(seconds: 1));
+  Future.delayed(const Duration(seconds: 1));
 
   showDialog(
     context: context,

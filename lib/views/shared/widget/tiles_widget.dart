@@ -4,19 +4,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 class TilesWidget extends StatelessWidget {
   final String title;
   final IconData leading;
-  final Function()? OnTap;
+  final Function()? onTap;
 
   const TilesWidget({
     Key? key,
     required this.title,
     required this.leading,
-    this.OnTap,
+    this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        onTap: OnTap,
+        onTap: onTap,
         leading: Icon(leading),
         title: Text(
           title,

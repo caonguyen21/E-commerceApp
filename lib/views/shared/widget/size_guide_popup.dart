@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ShoeSizeGuidePopup extends StatelessWidget {
+  const ShoeSizeGuidePopup({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -34,7 +36,7 @@ class ShoeSizeItem extends StatelessWidget {
   final String size;
   final String length;
 
-  const ShoeSizeItem({required this.size, required this.length});
+  const ShoeSizeItem({super.key, required this.size, required this.length});
 
   @override
   Widget build(BuildContext context) {

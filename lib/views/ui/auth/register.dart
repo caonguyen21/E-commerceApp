@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../controllers/login_provider.dart';
 import '../../shared/appstyle.dart';
-import '../../shared/custom_textfield.dart';
+import '../../shared/custom/custom_textfield.dart';
 import '../../shared/reusableText.dart';
 
 class Register extends StatefulWidget {

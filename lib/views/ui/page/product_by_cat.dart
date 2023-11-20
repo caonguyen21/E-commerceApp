@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_shopping_app/views/shared/category_btn.dart';
-import 'package:flutter_shopping_app/views/shared/custom_spacer.dart';
-import 'package:flutter_shopping_app/views/shared/lates_product.dart';
+import 'package:flutter_shopping_app/views/shared/custom/category_btn.dart';
+import 'package:flutter_shopping_app/views/shared/custom/custom_spacer.dart';
+import 'package:flutter_shopping_app/views/shared/widget/lates_product.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../../controllers/product_provider.dart';
-import '../shared/appstyle.dart';
+import '../../../controllers/product_provider.dart';
+import '../../shared/appstyle.dart';
 
 class ProductByCat extends StatefulWidget {
   const ProductByCat({super.key, required this.tabIndex});

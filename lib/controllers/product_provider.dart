@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/product.dart';
-import '../services/helper.dart';
+import '../services/products_helper.dart';
 
 class ProductNotifier extends ChangeNotifier {
   List<Map<String, dynamic>> _productSizes = [];

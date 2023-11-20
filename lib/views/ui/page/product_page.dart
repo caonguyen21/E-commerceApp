@@ -6,20 +6,20 @@ import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/models/cart/add_to_cart.dart';
 import 'package:flutter_shopping_app/services/cart_helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
-import 'package:flutter_shopping_app/views/ui/cartpage.dart';
+import 'package:flutter_shopping_app/views/ui/page/cartpage.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 
-import '../../models/cart/get_products.dart';
-import '../../models/favorite/add_to_fav.dart';
-import '../../models/favorite/get_productsfav.dart';
-import '../../models/product.dart';
-import '../../services/fav_helper.dart';
-import '../shared/checkout_btn.dart';
-import '../shared/reusableText.dart';
-import '../shared/size_guide_popup.dart';
-import 'NonUser.dart';
+import '../../../models/cart/get_products.dart';
+import '../../../models/favorite/add_to_fav.dart';
+import '../../../models/favorite/get_productsfav.dart';
+import '../../../models/product.dart';
+import '../../../services/fav_helper.dart';
+import '../../shared/custom/checkout_btn.dart';
+import '../../shared/reusableText.dart';
+import '../../shared/widget/size_guide_popup.dart';
+import '../auth/nonuser.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key, required this.product});
@@ -266,7 +266,7 @@ class _ProductPageState extends State<ProductPage> {
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
-                                          return ShoeSizeGuidePopup();
+                                          return const ShoeSizeGuidePopup();
                                         },
                                       );
                                     },

@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_shopping_app/models/favorite/get_productsfav.dart';
 import 'package:flutter_shopping_app/services/fav_helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
-import 'package:flutter_shopping_app/views/ui/product_page.dart';
+import 'package:flutter_shopping_app/views/ui/page/product_page.dart';
 import 'package:provider/provider.dart';
 
-import '../../controllers/login_provider.dart';
-import '../../controllers/product_provider.dart';
-import '../shared/reusableText.dart';
-import 'NonUser.dart';
+import '../../../controllers/login_provider.dart';
+import '../../../controllers/product_provider.dart';
+import '../../shared/reusableText.dart';
+import '../auth/nonuser.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({Key? key}) : super(key: key);
 
   @override
-  _FavoritePageState createState() => _FavoritePageState();
+  State<FavoritePage> createState() => _FavoritePageState();
 }
 
 class _FavoritePageState extends State<FavoritePage> {

@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_shopping_app/controllers/mainscreen_provider.dart';
-import 'package:flutter_shopping_app/views/ui/favoritepage.dart';
-import 'package:flutter_shopping_app/views/ui/homepage.dart';
-import 'package:flutter_shopping_app/views/ui/profilepage.dart';
-import 'package:flutter_shopping_app/views/ui/searchpage.dart';
+import 'package:flutter_shopping_app/views/ui/page/favoritepage.dart';
+import 'package:flutter_shopping_app/views/ui/page/homepage.dart';
+import 'package:flutter_shopping_app/views/ui/page/profilepage.dart';
+import 'package:flutter_shopping_app/views/ui/page/searchpage.dart';
 import 'package:provider/provider.dart';
 
-import '../shared/bottom_nav.dart';
+import '../shared/widget/bottom_nav.dart';
 
 class MainScreen extends StatelessWidget {
-  MainScreen({super.key});
+  MainScreen({Key? key}) : super(key: key);
 
-  List<Widget> pageList = [const HomePage(), const SearchPage(), const FavoritePage(), const ProfilePage()];
+  final List<Widget> pageList = [
+    const HomePage(),
+    const SearchPage(),
+    const FavoritePage(),
+    const ProfilePage(),
+  ];
 
   @override
   Widget build(BuildContext context) {

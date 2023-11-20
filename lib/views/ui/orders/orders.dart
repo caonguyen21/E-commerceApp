@@ -9,7 +9,7 @@ class ProcessOrders extends StatefulWidget {
   const ProcessOrders({Key? key}) : super(key: key);
 
   @override
-  _ProcessOrdersState createState() => _ProcessOrdersState();
+  State<ProcessOrders> createState() => _ProcessOrdersState();
 }
 
 class _ProcessOrdersState extends State<ProcessOrders> {
@@ -58,7 +58,7 @@ class _ProcessOrdersState extends State<ProcessOrders> {
                 height: 20,
               ),
               SizedBox(
-                height: 500.h,
+                height: 620.h,
                 child: FutureBuilder(
                   future: _ordersList,
                   builder: (context, snapshot) {
@@ -171,7 +171,7 @@ class ProductItem extends StatelessWidget {
                           children: [
                             Text(
                               '\$${data.productId.price}',
-                              style: appstyle(14, Colors.black, FontWeight.w600),
+                              style: appstyle2(14, Colors.black, FontWeight.w600),
                             ),
                             SizedBox(
                               width: 10.w,

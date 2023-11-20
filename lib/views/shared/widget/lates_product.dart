@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_shopping_app/views/shared/shimmer_effect.dart'; // Assuming you have this file for shimmer effect
+import 'package:flutter_shopping_app/views/shared/widget/shimmer_effect.dart'; // Assuming you have this file for shimmer effect
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 
-import '../../controllers/product_provider.dart';
-import '../../models/product.dart';
-import '../shared/stagger_tile.dart';
-import '../ui/product_page.dart';
+import '../../../controllers/product_provider.dart';
+import '../../../models/product.dart';
+import 'stagger_tile.dart';
+import '../../ui/page/product_page.dart';
 
 class LatestProduct extends StatelessWidget {
   const LatestProduct({

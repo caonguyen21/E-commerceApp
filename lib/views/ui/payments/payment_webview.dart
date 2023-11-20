@@ -14,7 +14,9 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 // Import for iOS features.
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
+import '../../../controllers/cart_provider.dart';
 import '../../../controllers/payment_controller.dart';
+import '../../../services/cart_helper.dart';
 import 'failed.dart';
 // #enddocregion platform_imports
 
@@ -32,6 +34,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
   void initState() {
     super.initState();
     var paymentNotifier = Provider.of<PaymentNotifier>(context, listen: false);
+    var cartProvider = Provider.of<CartProvider>(context, listen: false);
     // #docregion platform_features
     late final PlatformWebViewControllerCreationParams params;
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
@@ -73,11 +76,14 @@ Page resource error:
             debugPrint('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           },
-          onUrlChange: (UrlChange change) {
+          onUrlChange: (UrlChange change) async {
             if (change.url!.contains('checkout-success')) {
+              // Payment was successful, delete the cart item
+              CartHelper().deleteItem(cartProvider.checkout[0].id);
               paymentNotifier.setPaymentUrl = '';
               Navigator.push(context, MaterialPageRoute(builder: (context) => const Successful()));
             } else if (change.url!.contains('cancel')) {
+              // Payment was canceled
               paymentNotifier.setPaymentUrl = '';
               Navigator.push(context, MaterialPageRoute(builder: (context) => const PaymentFailed()));
             }

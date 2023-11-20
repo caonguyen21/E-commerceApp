@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/models/auth/login_model.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
-import 'package:flutter_shopping_app/views/shared/custom_textfield.dart';
+import 'package:flutter_shopping_app/views/shared/custom/custom_textfield.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:flutter_shopping_app/views/ui/auth/register.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'appstyle.dart';
+import '../appstyle.dart';
 
 class CustomField extends StatefulWidget {
   const CustomField({

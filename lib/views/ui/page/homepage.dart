@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
-import 'package:flutter_shopping_app/views/shared/home_widget.dart';
+import 'package:flutter_shopping_app/views/shared/widget/home_widget.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:provider/provider.dart';
 
-import '../shared/appstyle.dart';
+import '../../shared/appstyle.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

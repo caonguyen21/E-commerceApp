@@ -119,7 +119,6 @@ class CartHelper {
           Uri.parse(redirectUrl),
           headers: requestHeaders,
         );
-
         if (redirectedResponse.statusCode == 200) {
           return true;
         } else {

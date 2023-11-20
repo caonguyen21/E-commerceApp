@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
-import 'package:flutter_shopping_app/views/shared/shimmer_effect.dart';
-import 'package:flutter_shopping_app/views/ui/product_page.dart';
+import 'package:flutter_shopping_app/views/shared/widget/shimmer_effect.dart';
+import 'package:flutter_shopping_app/views/ui/page/product_page.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/product.dart';
-import '../ui/product_by_cat.dart';
-import 'appstyle.dart';
+import '../../../models/product.dart';
+import '../../ui/page/product_by_cat.dart';
+import '../appstyle.dart';
 import 'new_product.dart';
 import 'product_card.dart';
 

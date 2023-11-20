@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'appstyle.dart';
+import '../appstyle.dart';
 
 class CheckoutBtn extends StatelessWidget {
   CheckoutBtn({super.key, required this.label, this.onTap});

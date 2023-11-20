@@ -6,9 +6,9 @@ import 'package:flutter_shopping_app/views/shared/appstyle.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/favorite/add_to_fav.dart';
-import '../../models/favorite/get_productsfav.dart';
-import '../ui/NonUser.dart';
+import '../../../models/favorite/add_to_fav.dart';
+import '../../../models/favorite/get_productsfav.dart';
+import '../../ui/auth/nonuser.dart';
 
 class ProductCard extends StatefulWidget {
   const ProductCard({

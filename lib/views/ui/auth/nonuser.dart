@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/views/shared/reusableText.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../shared/appstyle.dart';
-import 'auth/login.dart';
+import '../../shared/appstyle.dart';
+import 'login.dart';
 
 class NonUser extends StatelessWidget {
   const NonUser({super.key});

@@ -6,16 +6,16 @@ import 'package:flutter_shopping_app/controllers/payment_controller.dart';
 import 'package:flutter_shopping_app/models/cart/add_to_cart.dart';
 import 'package:flutter_shopping_app/services/cart_helper.dart';
 import 'package:flutter_shopping_app/services/payment_helper.dart';
-import 'package:flutter_shopping_app/views/shared/checkout_btn.dart';
+import 'package:flutter_shopping_app/views/shared/custom/checkout_btn.dart';
 import 'package:flutter_shopping_app/views/ui/payments/payment_webview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../models/cart/get_products.dart';
-import '../../models/orders/orders_req.dart';
-import '../shared/appstyle.dart';
-import '../shared/reusableText.dart';
+import '../../../models/cart/get_products.dart';
+import '../../../models/orders/orders_req.dart';
+import '../../shared/appstyle.dart';
+import '../../shared/reusableText.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -400,12 +400,15 @@ class _CartPageState extends State<CartPage> {
                                         userId: userId,
                                         cartItems: [
                                           CartItem(
-                                              name: cartProvider.checkout[0].cartItem.name,
-                                              id: cartProvider.checkout[0].cartItem.id,
-                                              price: cartProvider.checkout[0].cartItem.price,
-                                              cartQuantity: cartProvider.checkout[0].quantity)
+                                            name: cartProvider.checkout[0].cartItem.name,
+                                            id: cartProvider.checkout[0].cartItem.id,
+                                            price: cartProvider.checkout[0].cartItem.price,
+                                            cartQuantity: cartProvider.checkout[0].quantity,
+                                          )
                                         ],
                                       );
+
+                                      // Make the payment
                                       PaymentHelper().payment(model).then((value) {
                                         paymentNotifier.setPaymentUrl = value;
                                       });

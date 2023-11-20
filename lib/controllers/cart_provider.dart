@@ -1,7 +1,4 @@
-import 'dart:core';
-
 import 'package:flutter/cupertino.dart';
-
 import '../models/cart/get_products.dart';
 
 class CartProvider with ChangeNotifier {
@@ -10,8 +7,8 @@ class CartProvider with ChangeNotifier {
 
   List<Product> get checkout => _checkout;
 
-  set setCheckoutList(List<Product> newSate) {
-    _checkout = newSate;
+  set setCheckout(List<Product> newState) {
+    _checkout = newState;
     notifyListeners();
   }
 
