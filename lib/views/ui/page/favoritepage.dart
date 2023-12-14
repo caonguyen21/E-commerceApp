@@ -43,14 +43,9 @@ class _FavoritePageState extends State<FavoritePage> {
                     padding: const EdgeInsets.fromLTRB(16, 45, 0, 0),
                     height: MediaQuery.of(context).size.height * 0.4,
                     width: MediaQuery.of(context).size.width,
-                    decoration:
-                        const BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/top_image.png"), fit: BoxFit.fill)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        "My Favorites",
-                        style: appstyle(40, Colors.white, FontWeight.bold),
-                      ),
+                    child: Text(
+                      "My Favorites",
+                      style: appstyle(40, Colors.black, FontWeight.bold),
                     ),
                   ),
                   Padding(
@@ -70,10 +65,12 @@ class _FavoritePageState extends State<FavoritePage> {
                             ),
                           );
                         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Center(
-                            child: Text(
-                              'No items in favorites.',
-                              style: appstyle(28, Colors.black, FontWeight.bold),
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 100),
+                            child: Center(
+                              child: Image.asset(
+                                "assets/images/favorite.gif",
+                              ),
                             ),
                           );
                         } else {

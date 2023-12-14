@@ -116,16 +116,14 @@ class _CartPageState extends State<CartPage> {
                                   );
                                 } else if (snapshot.hasError) {
                                   return Center(
-                                    child: ReusableText(
-                                      text: 'No items in cart.',
-                                      style: appstyle(18, Colors.black, FontWeight.w600),
+                                    child: Image.asset(
+                                      "assets/images/cart.gif",
                                     ),
                                   );
                                 } else if (snapshot.data == null || (snapshot.data as List).isEmpty) {
                                   return Center(
-                                    child: Text(
-                                      'No items in cart.',
-                                      style: appstyle(28, Colors.black, FontWeight.bold),
+                                    child: Image.asset(
+                                      "assets/images/cart.gif",
                                     ),
                                   );
                                 } else {

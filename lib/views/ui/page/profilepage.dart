@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/services/auth_helper.dart';
 import 'package:flutter_shopping_app/views/shared/widget/tiles_widget.dart';
-import '../auth/nonuser.dart';
 import 'package:flutter_shopping_app/views/ui/auth/login.dart';
-import 'package:flutter_shopping_app/views/ui/page/favoritepage.dart';
 import 'package:flutter_shopping_app/views/ui/orders/orders.dart';
+import 'package:flutter_shopping_app/views/ui/page/favoritepage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controllers/login_provider.dart';
 import '../../shared/appstyle.dart';
 import '../../shared/reusableText.dart';
+import '../auth/nonuser.dart';
 import 'cartpage.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -32,10 +32,15 @@ class _ProfilePageState extends State<ProfilePage> {
             appBar: AppBar(
               backgroundColor: const Color(0xFFE2E2E2),
               elevation: 0,
-              leading: const Icon(
-                Icons.qr_code_scanner,
-                size: 18,
-                color: Colors.black,
+              leading: GestureDetector(
+                onTap: () {
+                  showComingSoonDialog(context, "Scan qr product");
+                },
+                child: const Icon(
+                  Icons.qr_code_scanner,
+                  size: 18,
+                  color: Colors.black,
+                ),
               ),
               actions: [
                 GestureDetector(
@@ -45,10 +50,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SvgPicture.asset(
-                          'assets/images/usa.svg',
-                          width: 25.w,
-                          height: 25.h,
+                        GestureDetector(
+                          onTap: () {
+                            showComingSoonDialog(context, "Language");
+                          },
+                          child: SvgPicture.asset(
+                            'assets/images/usa.svg',
+                            width: 25.w,
+                            height: 25.h,
+                          ),
                         ),
                         SizedBox(
                           width: 5.w,
@@ -65,12 +75,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           width: 10.w,
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 4),
-                          child: Icon(
-                            Icons.settings_outlined,
-                            color: Colors.black,
-                            size: 18,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: GestureDetector(
+                            onTap: () {
+                              showComingSoonDialog(context, "Setting");
+                            },
+                            child: const Icon(
+                              Icons.settings_outlined,
+                              color: Colors.black,
+                              size: 18,
+                            ),
                           ),
                         )
                       ],
@@ -139,7 +154,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ],
                               ),
                               GestureDetector(
-                                  onTap: () {},
+                                  onTap: () {
+                                    showComingSoonDialog(context, "Edit profile");
+                                  },
                                   child: const Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Icon(

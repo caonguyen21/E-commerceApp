@@ -69,9 +69,8 @@ class _SearchPageState extends State<SearchPage> {
 
     if (search.text.isEmpty) {
       return Center(
-        child: Text(
-          'No items in search',
-          style: appstyle(28, Colors.black, FontWeight.bold),
+        child: Image.asset(
+          "assets/images/search.gif",
         ),
       );
     }
