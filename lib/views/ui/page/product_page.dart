@@ -6,8 +6,9 @@ import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/models/cart/add_to_cart.dart';
 import 'package:flutter_shopping_app/services/cart_helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
-import 'package:flutter_shopping_app/views/ui/page/cartpage.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
+import 'package:flutter_shopping_app/views/ui/page/cartpage.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 
@@ -40,6 +41,7 @@ class _ProductPageState extends State<ProductPage> {
   @override
   void dispose() {
     _isMounted = false;
+    commentFocusNode.dispose();
     super.dispose();
   }
 
@@ -81,6 +83,10 @@ class _ProductPageState extends State<ProductPage> {
     loadFavorites();
     super.initState();
   }
+
+  TextEditingController commentController = TextEditingController();
+  bool textFieldClicked = false;
+  FocusNode commentFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -347,12 +353,127 @@ class _ProductPageState extends State<ProductPage> {
                           ReadMoreText(
                             widget.product.description,
                             trimLines: 5,
-                            style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.normal),
+                            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal),
                             colorClickableText: Colors.blue,
                             trimMode: TrimMode.Line,
                             trimCollapsedText: '...Read more',
                             trimExpandedText: ' Less',
                           ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: Text(
+                                "Comments",
+                                style: appstyle(22.sp, Colors.black, FontWeight.w700),
+                              )),
+                          Container(
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                TextField(
+                                  controller: commentController,
+                                  focusNode: commentFocusNode,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Type your comment...',
+                                    border: InputBorder.none,
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      textFieldClicked = true;
+                                    });
+                                  },
+                                ),
+                                if (textFieldClicked)
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        const Divider(
+                                          color: Colors.black,
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: commentController.text.isEmpty
+                                              ? null // Disable the button if TextField is empty
+                                              : () async {
+                                                  // Add your comment submission logic here
+                                                },
+                                          style: ButtonStyle(
+                                            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                                              (Set<MaterialState> states) {
+                                                if (states.contains(MaterialState.disabled)) {
+                                                  // Disabled color
+                                                  return Colors.grey;
+                                                } else if (states.contains(MaterialState.pressed)) {
+                                                  // Pressed color
+                                                  return Colors.blue;
+                                                } else {
+                                                  // Default color
+                                                  return Colors.blue; // Set the default color when not pressed
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'Post',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 190.h,
+                            child: widget.product.comments.isEmpty
+                                ? const Center(child: Text('No comments for this product yet'))
+                                : ListView.builder(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    itemCount: widget.product.comments.length,
+                                    itemBuilder: (context, index) {
+                                      Comment comment = widget.product.comments[index];
+                                      return FutureBuilder<String>(
+                                        future: comment.username,
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                            return const CircularProgressIndicator();
+                                          } else if (snapshot.hasError || snapshot.data == null) {
+                                            return const Center(child: Text('Error loading comments'));
+                                          } else {
+                                            return ListTile(
+                                              title: Text(
+                                                snapshot.data ?? 'Unknown',
+                                                style: appstyle(16.sp, Colors.black, FontWeight.w600),
+                                              ),
+                                              subtitle: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    comment.text,
+                                                    style: appstyle(14.sp, Colors.black, FontWeight.normal),
+                                                  ),
+                                                  Text(
+                                                    'Posted on: ${DateFormat('dd:MM:yy HH:mm').format(comment.createdAt)}',
+                                                    style: appstyle(14.sp, Colors.grey, FontWeight.normal),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      );
+                                    },
+                                  ),
+                          )
                         ],
                       ),
                     ),

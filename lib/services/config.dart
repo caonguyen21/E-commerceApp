@@ -13,6 +13,7 @@ class Config {
   static const String products = "/api/products";
   static const String orders = "/api/orders";
   static const String search = "/api/products/search/";
+  static const String addComment = "/api/products/addComment";
   static const String profile = "/api/products/search/";
   static const String addFavoriteUrl = "/api/favorites";
 }

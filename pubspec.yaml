@@ -52,6 +52,7 @@ dependencies:
   flutter_svg: ^2.0.5
   shared_preferences:
   webview_flutter: ^4.2.2
+  intl:
 dev_dependencies:
   flutter_test:
     sdk: flutter

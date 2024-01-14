@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/product.dart';
 import 'config.dart';
@@ -54,6 +57,68 @@ class Helper {
       return results.toList();
     } else {
       throw Exception("Failed get products list");
+    }
+  }
+
+  // addComment
+  Future<bool> addComment(Comment comment, String productId) async {
+    try {
+      final SharedPreferences pref = await SharedPreferences.getInstance();
+      final String? userToken = pref.getString('token');
+
+      final Uri url = Uri.http(Config.apiUrl, Config.addComment);
+      print(url);
+      final Map<String, String> requestHeaders = {
+        'Content-Type': 'application/json',
+        'token': 'Bearer $userToken',
+      };
+
+      Map<String, dynamic> requestBody = {
+        'productId': productId,
+        'comment': comment.toJson(),
+      };
+
+      print('Request Payload: ${jsonEncode({
+        'productId': productId,
+        'comment': comment.toJson(),
+      })}');
+
+      var response = await http.post(
+        url,
+        headers: requestHeaders,
+        body: jsonEncode({
+          'productId': productId,
+          'comment': comment.toJson(),
+        }),
+      );
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 307) {
+        // If the server returns a 307 status code, get the new location and retry the request
+        String redirectUrl = response.headers['location'] ?? '';
+
+        // Retry the request with the new location
+        final redirectedResponse = await http.post(
+          Uri.parse(redirectUrl),
+          headers: requestHeaders,
+          body: jsonEncode(requestBody),
+        );
+
+        if (redirectedResponse.statusCode == 200) {
+          return true;
+        } else {
+          // Handle the case where the redirected request was not successful
+          return false;
+        }
+      } else if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      // Handle errors here
+      return false;
     }
   }
 }
