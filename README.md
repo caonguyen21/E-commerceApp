@@ -33,6 +33,9 @@ Meadow Store là một ứng dụng E-commerce hiện đại, mang lại trải 
 
   Tính năng tìm kiếm sản phẩm được tích hợp với công nghệ tìm kiếm nâng cao, giúp người dùng nhanh chóng và chính xác tìm thấy sản phẩm mong muốn. Kết quả tìm kiếm sẽ hiển thị các sản phẩm liên quan và gợi ý tương tự, tối ưu hóa trải nghiệm mua sắm của họ.
 
+- **Tính Năng Bình luận Sản Phẩm**
+
+  Tính năng bình luận cho phép người dùng nhập ý kiến và tương tác với nội dung bằng cách thêm và đọc các ý kiến từ cộng đồng.
 
 ## Ảnh Chụp Màn Hình
 
