@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_shopping_app/controllers/login_provider.dart';
 import 'package:flutter_shopping_app/controllers/product_provider.dart';
 import 'package:flutter_shopping_app/models/cart/add_to_cart.dart';
+import 'package:flutter_shopping_app/services/auth_helper.dart';
 import 'package:flutter_shopping_app/services/cart_helper.dart';
 import 'package:flutter_shopping_app/views/shared/appstyle.dart';
 import 'package:flutter_shopping_app/views/ui/mainscreen.dart';
@@ -12,11 +15,13 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 
+import '../../../models/auth_response/profile_model.dart';
 import '../../../models/cart/get_products.dart';
 import '../../../models/favorite/add_to_fav.dart';
 import '../../../models/favorite/get_productsfav.dart';
 import '../../../models/product.dart';
 import '../../../services/fav_helper.dart';
+import '../../../services/products_helper.dart';
 import '../../shared/custom/checkout_btn.dart';
 import '../../shared/reusableText.dart';
 import '../../shared/widget/size_guide_popup.dart';
@@ -87,6 +92,7 @@ class _ProductPageState extends State<ProductPage> {
   TextEditingController commentController = TextEditingController();
   bool textFieldClicked = false;
   FocusNode commentFocusNode = FocusNode();
+  int visibleComments = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -354,10 +360,12 @@ class _ProductPageState extends State<ProductPage> {
                             widget.product.description,
                             trimLines: 5,
                             style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal),
-                            colorClickableText: Colors.blue,
+                            colorClickableText: Colors.black,
                             trimMode: TrimMode.Line,
                             trimCollapsedText: '...Read more',
+                            moreStyle: const TextStyle(fontWeight: FontWeight.bold),
                             trimExpandedText: ' Less',
+                            lessStyle: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           SizedBox(
                             height: 10.h,
@@ -388,9 +396,17 @@ class _ProductPageState extends State<ProductPage> {
                                     setState(() {
                                       textFieldClicked = true;
                                     });
+                                    // Check login status and navigate to login page if not logged in
+                                    if (authNotifier.login == false) {
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (context) => const NonUser(), // Replace with your login page
+                                        ),
+                                      );
+                                    }
                                   },
                                 ),
-                                if (textFieldClicked)
+                                if (textFieldClicked && authNotifier.login)
                                   Align(
                                     alignment: Alignment.bottomRight,
                                     child: Column(
@@ -401,9 +417,68 @@ class _ProductPageState extends State<ProductPage> {
                                         ),
                                         ElevatedButton(
                                           onPressed: commentController.text.isEmpty
-                                              ? null // Disable the button if TextField is empty
+                                              ? null
                                               : () async {
-                                                  // Add your comment submission logic here
+                                                  // Get the profile information
+                                                  ProfileRes userProfile = await AuthHelper().getProfile();
+
+                                                  // Extract the username
+                                                  String userName = userProfile.username;
+
+                                                  // Create a Comment object with the text from the input field
+                                                  Comment newComment =
+                                                      Comment(text: commentController.text, username: userName, createdAt: DateTime.now());
+
+                                                  // Check if the comment text is not empty
+                                                  if (newComment.text.isNotEmpty) {
+                                                    // Show a loading indicator while adding the comment
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) {
+                                                        return AlertDialog(
+                                                          content: Column(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: [
+                                                              const CircularProgressIndicator(),
+                                                              const SizedBox(height: 8),
+                                                              const Text('Adding Comment...'),
+                                                            ],
+                                                          ),
+                                                        );
+                                                      },
+                                                      barrierDismissible: false, // Prevent users from closing the dialog
+                                                    );
+
+                                                    // Call the addComment function
+                                                    bool commentAdded = await Helper().addComment(newComment, widget.product.id);
+
+                                                    // Close the loading indicator dialog
+                                                    Navigator.pop(context);
+
+                                                    // Check if the comment is added successfully
+                                                    if (commentAdded) {
+                                                      setState(() {
+                                                        widget.product.comments.insert(0, newComment);
+                                                      });
+                                                      commentController.clear();
+                                                      textFieldClicked = false;
+                                                      commentFocusNode.unfocus();
+                                                    } else {
+                                                      // Handle the case where adding a comment failed
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text('Failed to add comment'),
+                                                        ),
+                                                      );
+                                                    }
+                                                  } else {
+                                                    // Handle the case where the comment text is empty
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text('Comment text cannot be empty'),
+                                                      ),
+                                                    );
+                                                  }
                                                 },
                                           style: ButtonStyle(
                                             backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -413,10 +488,10 @@ class _ProductPageState extends State<ProductPage> {
                                                   return Colors.grey;
                                                 } else if (states.contains(MaterialState.pressed)) {
                                                   // Pressed color
-                                                  return Colors.blue;
+                                                  return Colors.black;
                                                 } else {
                                                   // Default color
-                                                  return Colors.blue; // Set the default color when not pressed
+                                                  return Colors.black; // Set the default color when not pressed
                                                 }
                                               },
                                             ),
@@ -425,7 +500,7 @@ class _ProductPageState extends State<ProductPage> {
                                             'Post',
                                             style: TextStyle(color: Colors.white),
                                           ),
-                                        ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -433,45 +508,60 @@ class _ProductPageState extends State<ProductPage> {
                             ),
                           ),
                           SizedBox(
-                            height: 190.h,
+                            height: 210.h,
                             child: widget.product.comments.isEmpty
                                 ? const Center(child: Text('No comments for this product yet'))
-                                : ListView.builder(
-                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                    itemCount: widget.product.comments.length,
-                                    itemBuilder: (context, index) {
-                                      Comment comment = widget.product.comments[index];
-                                      return FutureBuilder<String>(
-                                        future: comment.username,
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState == ConnectionState.waiting) {
-                                            return const CircularProgressIndicator();
-                                          } else if (snapshot.hasError || snapshot.data == null) {
-                                            return const Center(child: Text('Error loading comments'));
-                                          } else {
-                                            return ListTile(
-                                              title: Text(
-                                                snapshot.data ?? 'Unknown',
-                                                style: appstyle(16.sp, Colors.black, FontWeight.w600),
-                                              ),
-                                              subtitle: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    comment.text,
-                                                    style: appstyle(14.sp, Colors.black, FontWeight.normal),
-                                                  ),
-                                                  Text(
-                                                    'Posted on: ${DateFormat('dd:MM:yy HH:mm').format(comment.createdAt)}',
-                                                    style: appstyle(14.sp, Colors.grey, FontWeight.normal),
-                                                  ),
-                                                ],
-                                              ),
+                                : Column(
+                                    children: [
+                                      Expanded(
+                                        child: ListView.builder(
+                                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                          itemCount: min(visibleComments, widget.product.comments.length),
+                                          itemBuilder: (context, index) {
+                                            Comment comment = widget.product.comments.reversed.toList()[index];
+                                            return FutureBuilder<String>(
+                                              future: comment.fetchUsername(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                                  return const CircularProgressIndicator();
+                                                } else if (snapshot.hasError || snapshot.data == null) {
+                                                  return const Center(child: Text('Error loading comments'));
+                                                } else {
+                                                  return ListTile(
+                                                    title: Text(
+                                                      snapshot.data ?? 'Unknown',
+                                                      style: appstyle(16.sp, Colors.black, FontWeight.w600),
+                                                    ),
+                                                    subtitle: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          comment.text,
+                                                          style: appstyle(14.sp, Colors.black, FontWeight.normal),
+                                                        ),
+                                                        Text(
+                                                          'Posted on: ${DateFormat('dd:MM:yy HH:mm').format(comment.createdAt)}',
+                                                          style: appstyle(14.sp, Colors.grey, FontWeight.normal),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                }
+                                              },
                                             );
-                                          }
-                                        },
-                                      );
-                                    },
+                                          },
+                                        ),
+                                      ),
+                                      if (visibleComments < widget.product.comments.length)
+                                        TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              visibleComments += 5; // Increase the number of visible comments
+                                            });
+                                          },
+                                          child: const Text('Read More'),
+                                        ),
+                                    ],
                                   ),
                           )
                         ],

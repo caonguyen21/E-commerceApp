@@ -82,41 +82,40 @@ class Size {
 }
 
 class Comment {
-  final String userId;
+  late String username;
   final String text;
-  late Future<String> username; // Use late for non-nullable field
-  late DateTime createdAt; // Add this line to handle createdAt
+  final DateTime createdAt;
 
   Comment({
-    required this.userId,
+    required this.username,
     required this.text,
     required this.createdAt,
-  }) {
-    // Initialize the Future to fetch the username
-    username = fetchUsername();
-  }
+  });
 
   Future<String> fetchUsername() async {
     // Implement your logic to fetch the username based on userId
     // You may use an API call, database query, or any other method
     // Return the username as a String
-    return userId.toString(); // Replace with your actual logic
+    return username; // Replace with your actual logic
   }
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
-      userId: json['user'] ?? '',
+      username: json['username'] ?? '',
       text: json['text'] ?? '',
-      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now() : DateTime.now(),
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now()
+          : DateTime.now(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'user': userId,
-        'text': text,
-        'createdAt': createdAt.toIso8601String(), // Convert DateTime to string
-      };
+    'username': username,
+    'text': text,
+    'createdAt': createdAt.toIso8601String(), // Convert DateTime to string
+  };
 }
+
 
 List<Products> productsFromJson(String str) => List<Products>.from(json.decode(str).map((x) => Products.fromJson(x)));
 

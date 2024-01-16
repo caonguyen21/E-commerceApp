@@ -67,7 +67,6 @@ class Helper {
       final String? userToken = pref.getString('token');
 
       final Uri url = Uri.http(Config.apiUrl, Config.addComment);
-      print(url);
       final Map<String, String> requestHeaders = {
         'Content-Type': 'application/json',
         'token': 'Bearer $userToken',
@@ -75,21 +74,13 @@ class Helper {
 
       Map<String, dynamic> requestBody = {
         'productId': productId,
-        'comment': comment.toJson(),
+        'text': comment.text,
       };
-
-      print('Request Payload: ${jsonEncode({
-        'productId': productId,
-        'comment': comment.toJson(),
-      })}');
 
       var response = await http.post(
         url,
         headers: requestHeaders,
-        body: jsonEncode({
-          'productId': productId,
-          'comment': comment.toJson(),
-        }),
+        body: jsonEncode(requestBody),
       );
       print('Response Status Code: ${response.statusCode}');
       print('Response Body: ${response.body}');
@@ -111,7 +102,7 @@ class Helper {
           // Handle the case where the redirected request was not successful
           return false;
         }
-      } else if (response.statusCode == 200) {
+      } else if (response.statusCode == 201) {
         return true;
       } else {
         return false;
