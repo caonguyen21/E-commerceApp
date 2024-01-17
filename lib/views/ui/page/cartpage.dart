@@ -16,6 +16,7 @@ import '../../../models/cart/get_products.dart';
 import '../../../models/orders/orders_req.dart';
 import '../../shared/appstyle.dart';
 import '../../shared/reusableText.dart';
+import '../payments/successful.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -28,6 +29,7 @@ class _CartPageState extends State<CartPage> {
   List<dynamic> cart = [];
 
   late Future<List<Product>> _cartList;
+  final GlobalKey<State> _key = GlobalKey<State>();
 
   @override
   void initState() {
@@ -133,7 +135,6 @@ class _CartPageState extends State<CartPage> {
                                       padding: EdgeInsets.zero,
                                       itemBuilder: (context, index) {
                                         final data = cartData![index];
-                                        //final totalPrice = cartProvider.calculateTotalPrice(data['price'], data['qty']);
                                         return GestureDetector(
                                           onTap: () {
                                             cartProvider.toggleSelection(index);
@@ -406,10 +407,58 @@ class _CartPageState extends State<CartPage> {
                                         ],
                                       );
 
-                                      // Make the payment
-                                      PaymentHelper().payment(model).then((value) {
-                                        paymentNotifier.setPaymentUrl = value;
-                                      });
+                                      // Create an instance of the OrderOnDelivery class
+                                      OrderOnDelivery model2 = OrderOnDelivery(
+                                        userId: userId,
+                                        productId: cartProvider.checkout[0].cartItem.id,
+                                        quantity: cartProvider.checkout[0].quantity,
+                                        subtotal: double.parse(cartProvider.checkout[0].cartItem.price) * cartProvider.checkout[0].quantity,
+                                        total: double.parse(cartProvider.checkout[0].cartItem.price) * cartProvider.checkout[0].quantity,
+                                      );
+
+                                      // Show a dialog to choose the payment method
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Choose Payment Method'),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                                              children: [
+                                                ElevatedButton(
+                                                  onPressed: () async {
+                                                    Navigator.pop(context); // Close the dialog
+                                                    // Make Stripe payment
+                                                    final paymentUrl = await PaymentHelper().payment(model);
+                                                    paymentNotifier.setPaymentUrl = paymentUrl;
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                    primary: Colors.blue,
+                                                    onPrimary: Colors.white,
+                                                  ),
+                                                  child: const Text('Pay with Stripe'),
+                                                ),
+                                                const SizedBox(height: 16),
+                                                ElevatedButton(
+                                                  onPressed: () async {
+                                                    Navigator.pop(context); // Close the dialog
+                                                    // Make Payment on Delivery
+                                                    PaymentHelper().paymentOnDelivery(model2);
+                                                    CartHelper().deleteItem(cartProvider.checkout[0].id);
+                                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const Successful()));
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                    primary: Colors.green,
+                                                    onPrimary: Colors.white,
+                                                  ),
+                                                  child: const Text('Payment on Delivery'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
                                     },
                                     label: 'Proceed to Checkout',
                                   ),

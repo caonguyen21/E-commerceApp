@@ -82,9 +82,6 @@ class Helper {
         headers: requestHeaders,
         body: jsonEncode(requestBody),
       );
-      print('Response Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
-
       if (response.statusCode == 307) {
         // If the server returns a 307 status code, get the new location and retry the request
         String redirectUrl = response.headers['location'] ?? '';

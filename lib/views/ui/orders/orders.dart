@@ -142,7 +142,7 @@ class ProductItem extends StatelessWidget {
                     child: Image.network(data.productId.imageUrl[0]),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 12, left: 18),
+                    padding: const EdgeInsets.only(top: 12, left: 12),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,

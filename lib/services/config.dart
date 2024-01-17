@@ -16,4 +16,5 @@ class Config {
   static const String addComment = "/api/products/addComment";
   static const String profile = "/api/products/search/";
   static const String addFavoriteUrl = "/api/favorites";
+  static const String addOrderUrl = "/api/orders/addOrder";
 }
