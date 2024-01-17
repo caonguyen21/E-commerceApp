@@ -64,8 +64,8 @@ class OrderOnDelivery {
   String userId;
   String productId;
   int quantity;
-  double subtotal;
-  double total;
+  int subtotal;
+  int total;
 
   OrderOnDelivery({
     required this.userId,

@@ -406,14 +406,17 @@ class _CartPageState extends State<CartPage> {
                                           )
                                         ],
                                       );
-
+                                      int price =
+                                          (double.parse(cartProvider.checkout[0].cartItem.price) * cartProvider.checkout[0].quantity)
+                                              .round();
+                                      print(price);
                                       // Create an instance of the OrderOnDelivery class
                                       OrderOnDelivery model2 = OrderOnDelivery(
                                         userId: userId,
                                         productId: cartProvider.checkout[0].cartItem.id,
                                         quantity: cartProvider.checkout[0].quantity,
-                                        subtotal: double.parse(cartProvider.checkout[0].cartItem.price) * cartProvider.checkout[0].quantity,
-                                        total: double.parse(cartProvider.checkout[0].cartItem.price) * cartProvider.checkout[0].quantity,
+                                        subtotal: price,
+                                        total: price,
                                       );
 
                                       // Show a dialog to choose the payment method
@@ -442,10 +445,9 @@ class _CartPageState extends State<CartPage> {
                                                 const SizedBox(height: 16),
                                                 ElevatedButton(
                                                   onPressed: () async {
-                                                    Navigator.pop(context); // Close the dialog
                                                     // Make Payment on Delivery
-                                                    PaymentHelper().paymentOnDelivery(model2);
-                                                    CartHelper().deleteItem(cartProvider.checkout[0].id);
+                                                    await PaymentHelper().paymentOnDelivery(model2);
+                                                    await CartHelper().deleteItem(cartProvider.checkout[0].id);
                                                     Navigator.push(context, MaterialPageRoute(builder: (context) => const Successful()));
                                                   },
                                                   style: ElevatedButton.styleFrom(
