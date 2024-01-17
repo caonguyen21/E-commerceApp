@@ -25,6 +25,10 @@ Meadow Store là một ứng dụng E-commerce hiện đại, mang lại trải 
 
   Tính năng thanh toán bằng **Stripe** mang lại sự thuận tiện và an toàn cho quá trình thanh toán. Người dùng có thể chọn phương thức thanh toán yêu thích của họ, và thông tin thanh toán được xử lý một cách an toàn và bảo mật thông qua dịch vụ thanh toán đáng tin cậy của Stripe.
 
+- ** Tính Năng Thanh Toán Khi Nhận Hàng
+
+  "Thanh toán khi nhận hàng: Trải nghiệm thanh toán thuận tiện và an toàn với tính năng thanh toán khi nhận hàng, giúp bạn chỉ thanh toán khi đã nhận được sản phẩm."
+
 - **Tính Năng Đăng Nhập và Đăng Ký**
 
   Tính năng đăng nhập và đăng ký giúp cá nhân hóa trải nghiệm mua sắm và quản lý dữ liệu cá nhân. Người dùng có thể theo dõi đơn hàng, quản lý địa chỉ giao hàng và xem lịch sử mua sắm của họ dễ dàng.
