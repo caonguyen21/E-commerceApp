@@ -1,0 +1,63 @@
+name: iOS-ipa-build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: 🎉 iOS Build
+    runs-on: macos-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+
+      # Install Flutter dependencies
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      
+      # Update CocoaPods repository
+      - name: Update CocoaPods repository
+        run: pod repo update
+        working-directory: ios
+
+      # Install CocoaPods dependencies
+      - name: Install CocoaPods dependencies
+        run: pod install
+        working-directory: ios
+
+      # Build the iOS app
+      - name: Build iOS app
+        run: flutter build ios --release --no-codesign
+
+      # Create Payload directory
+      - name: Create Payload directory
+        run: mkdir Payload
+        working-directory: build/ios/iphoneos
+
+      # Move Runner.app to Payload
+      - name: Move Runner.app to Payload
+        run: mv Runner.app/ Payload
+        working-directory: build/ios/iphoneos
+
+      # Zip the output
+      - name: Zip output
+        run: zip -qq -r -9 FlutterIpaExport.ipa Payload
+        working-directory: build/ios/iphoneos
+
+      # Upload binaries to release
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/ios/iphoneos/FlutterIpaExport.ipa
+          tag: v1.0
+          overwrite: true
+          body: "This is the first release"
